@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "logger.h"
+#include "mosquitto.h"
+#include "mosquitto_broker.h"
 
 // std::string g_mqtt_server = "localhost";
 // std::string g_mqtt_port = "1883";

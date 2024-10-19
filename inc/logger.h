@@ -3,6 +3,11 @@
  * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
  * @brief: Logging harness for the project
  * Write data to syslog or/and console
+ * # View the last 10 lines of the syslog file
+ * tail /var/log/syslog
+ *
+ * # Continuously view new entries in the syslog file
+ * tail -f /var/log/syslog
  * -----
  * Copyright 2024 - KElectronics
  * -----
@@ -13,9 +18,9 @@
 
 #pragma once
 
-#include <mutex>
-#include <sstream>
 #include <syslog.h>
+#include <sstream>
+#include <mutex>
 #include <utility>
 
 class Logger
