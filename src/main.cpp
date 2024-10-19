@@ -2,10 +2,12 @@
 
 #include "logger.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     std::cout << "Hello, World!" << std::endl;
-    Logger::Initialize();
-    Logger::Log("Starting Fuba Smart Antenna Manager... ");
+    Logger::Initialize(LOG_NOTICE, "symon");
+    Logger::Log(NOTICE, "System monitor is starting...");
+
+    Logger::Deinit();
     return 0;
 }
