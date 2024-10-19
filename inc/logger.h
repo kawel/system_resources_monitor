@@ -7,10 +7,9 @@ tail -f /var/log/syslog
 */
 
 #include <syslog.h>
-#include <string>
 #include <sstream>
 #include <mutex>
-
+#include <utility>
 
 #define EMERG LOG_EMERG
 #define ALERT LOG_ALERT
@@ -20,7 +19,6 @@ tail -f /var/log/syslog
 #define NOTICE LOG_NOTICE
 #define INFO LOG_INFO
 #define DEBUG LOG_DEBUG
-
 
 class Logger
 {
@@ -50,8 +48,9 @@ public:
         std::lock_guard<std::mutex> lock(logMutex);
         std::stringstream ss;
         Log(ss, std::forward<Args>(args)...);
-        syslog(logLevel, "%s", ss.str().c_str());
-        //  printf("LogLevel %d: %s\n", logLevel, ss.str().c_str());
+        std::string logLevelStr = LogLevelToString(logLevel);
+        // syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
+        printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
     }
 
     static void Deinit()
@@ -61,6 +60,21 @@ public:
 
 private:
     static std::mutex logMutex;
+
+    static std::string LogLevelToString(int logLevel)
+    {
+        switch (logLevel) {
+            case LOG_EMERG:   return "EMERG";
+            case LOG_ALERT:   return "ALERT";
+            case LOG_CRIT:    return "CRIT";
+            case LOG_ERR:     return "ERR";
+            case LOG_WARNING: return "WARN";
+            case LOG_NOTICE:  return "NOTICE";
+            case LOG_INFO:    return "INFO";
+            case LOG_DEBUG:   return "DEBUG";
+            default:          return "UNKNOWN";
+        }
+    }
 };
 
 // Define the static mutex
