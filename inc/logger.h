@@ -3,6 +3,11 @@
  * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
  * @brief: Logging harness for the project
  * Write data to syslog or/and console
+ * # View the last 10 lines of the syslog file
+ * tail /var/log/syslog
+ *
+ * # Continuously view new entries in the syslog file
+ * tail -f /var/log/syslog
  * -----
  * Copyright 2024 - KElectronics
  * -----
@@ -13,10 +18,11 @@
 
 #pragma once
 
-#include <mutex>
-#include <sstream>
 #include <syslog.h>
+#include <sstream>
+#include <mutex>
 #include <utility>
+#include <iostream>
 
 class Logger
 {
@@ -43,11 +49,14 @@ public:
         std::stringstream ss;
         Log(ss, std::forward<Args>(args)...);
         std::string logLevelStr = LogLevelToString(logLevel);
-        #ifdef USE_SYSLOG 
-            syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
-        #else
-            printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
-        #endif
+#ifdef USE_SYSLOG
+        syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
+#endif
+#ifdef USE_STDOUT
+        // printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
+        // change printf to cout
+        std::cout << "[" << logLevelStr << "] " << ss.str() << std::endl;
+#endif
     }
 
     template <class... Args>

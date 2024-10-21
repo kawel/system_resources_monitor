@@ -4,15 +4,18 @@ cmake_minimum_required(VERSION 3.10)
 project(srs_main)
 
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set the include directories
 set(INCLUDES inc)
 
 # Set the source files
-set(SOURCES src/main.cpp
+set(SOURCES 
     src/logger.cpp
+    src/main.cpp
+    src/MqttClient.cpp
+    src/SysMonitor.cpp
 )
 
 # Add the executable target
@@ -37,7 +40,16 @@ target_link_libraries(${PROJECT_NAME} ${MOSQUITTO_LIBRARIES})
 
 # Add compile definitions for Release build
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSLOG)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    USE_SYSLOG
+    )
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    USE_SYSLOG 
+    USE_STDOUT
+    )
 endif()
 
 # Print the build type
