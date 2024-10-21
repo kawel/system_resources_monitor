@@ -29,13 +29,16 @@ public:
     MqttClient(const std::string &clientId, const std::string &host, int port, int keepAlive = 60);
     ~MqttClient();
 
+    void Initialize();
+    void Deinit();
+    void Publish(const std::string &topic, const std::string &message);
+    void Subscribe(const std::string &topic);
+
+private:
     bool connect();
     void disconnect();
     void loop();
-    void publish(const std::string &topic, const std::string &message);
-    void subscribe(const std::string &topic);
 
-private:
     static void onConnect(struct mosquitto *mosq, void *obj, int result)
     {
         if (result == 0)

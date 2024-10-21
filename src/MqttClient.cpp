@@ -39,6 +39,21 @@ MqttClient::~MqttClient()
     Logger::LogDebug("Mosquitto instance destroyed");
 }
 
+void MqttClient::Initialize()
+{
+    if (!connect())
+    {
+        throw std::runtime_error("Failed to connect to broker");
+    }
+
+    loop();
+}
+
+void MqttClient::Deinit()
+{
+    disconnect();
+}
+
 bool MqttClient::connect()
 {
     int res = mosquitto_connect(_mosq, _host.c_str(), _port, _keepAlive);
@@ -66,12 +81,12 @@ void MqttClient::loop()
     mosquitto_loop_start(_mosq);
 }
 
-void MqttClient::publish(const std::string &topic, const std::string &message)
+void MqttClient::Publish(const std::string &topic, const std::string &message)
 {
     mosquitto_publish(_mosq, nullptr, topic.c_str(), message.size(), message.c_str(), 0, false);
 }
 
-void MqttClient::subscribe(const std::string &topic)
+void MqttClient::Subscribe(const std::string &topic)
 {
     mosquitto_subscribe(_mosq, nullptr, topic.c_str(), 0);
 }
