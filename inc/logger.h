@@ -1,81 +1,106 @@
-/*
-# View the last 10 lines of the syslog file
-tail /var/log/syslog
+/**
+ * @file: logger.h
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * @brief: Logging harness for the project
+ * Write data to syslog or/and console
+ * -----
+ * Copyright 2024 - KElectronics
+ * -----
+ * HISTORY:
+ * Date      	By	Comments
+ * ----------	---	---------------------------------------------------------
+ */
 
-# Continuously view new entries in the syslog file
-tail -f /var/log/syslog
-*/
+#pragma once
 
-#include <syslog.h>
-#include <sstream>
 #include <mutex>
+#include <sstream>
+#include <syslog.h>
 #include <utility>
-
-#define EMERG LOG_EMERG
-#define ALERT LOG_ALERT
-#define CRIT LOG_CRIT
-#define ERR LOG_ERR
-#define WARN LOG_WARNING
-#define NOTICE LOG_NOTICE
-#define INFO LOG_INFO
-#define DEBUG LOG_DEBUG
 
 class Logger
 {
 public:
-    static void Initialize(int logLevel = LOG_NOTICE, const std::string& ident = "symon", int facility = LOG_LOCAL1)
-    {
-        setlogmask(LOG_UPTO(logLevel));
-        openlog(ident.c_str(), LOG_PID | LOG_NDELAY, facility);
-    }
+    static void Initialize(int logLevel = LOG_NOTICE, const char *ident = "logger", int facility = LOG_LOCAL1);
 
     template <class T>
-    static void Log(std::stringstream& ss, T&& t)
+    static void Log(std::stringstream &ss, T &&t)
     {
         ss << ' ' << std::forward<T>(t);
     }
 
     template <class T, class... Args>
-    static void Log(std::stringstream& ss, T&& t, Args&&... args)
+    static void Log(std::stringstream &ss, T &&t, Args &&...args)
     {
         Log(ss, std::forward<T>(t));
         Log(ss, std::forward<Args>(args)...);
     }
 
     template <class... Args>
-    static void Log(int logLevel, Args&&... args)
+    static void Log(int logLevel, Args &&...args)
     {
         std::lock_guard<std::mutex> lock(logMutex);
         std::stringstream ss;
         Log(ss, std::forward<Args>(args)...);
         std::string logLevelStr = LogLevelToString(logLevel);
-        // syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
-        printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
+        #ifdef USE_SYSLOG 
+            syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
+        #else
+            printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
+        #endif
     }
 
-    static void Deinit()
+    template <class... Args>
+    static void LogEmergency(Args &&...args)
     {
-        closelog();
+        Log(LOG_EMERG, std::forward<Args>(args)...);
     }
+
+    template <class... Args>
+    static void LogAlert(Args &&...args)
+    {
+        Log(LOG_ALERT, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogCritical(Args &&...args)
+    {
+        Log(LOG_CRIT, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogError(Args &&...args)
+    {
+        Log(LOG_ERR, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogWarning(Args &&...args)
+    {
+        Log(LOG_WARNING, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogNotice(Args &&...args)
+    {
+        Log(LOG_NOTICE, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogInfo(Args &&...args)
+    {
+        Log(LOG_INFO, std::forward<Args>(args)...);
+    }
+
+    template <class... Args>
+    static void LogDebug(Args &&...args)
+    {
+        Log(LOG_DEBUG, std::forward<Args>(args)...);
+    }
+
+    static void Deinit();
 
 private:
     static std::mutex logMutex;
-
-    static std::string LogLevelToString(int logLevel)
-    {
-        switch (logLevel) {
-            case LOG_EMERG:   return "EMERG";
-            case LOG_ALERT:   return "ALERT";
-            case LOG_CRIT:    return "CRIT";
-            case LOG_ERR:     return "ERR";
-            case LOG_WARNING: return "WARN";
-            case LOG_NOTICE:  return "NOTICE";
-            case LOG_INFO:    return "INFO";
-            case LOG_DEBUG:   return "DEBUG";
-            default:          return "UNKNOWN";
-        }
-    }
+    static std::string LogLevelToString(int logLevel);
 };
-
-// Define the static mutex
-std::mutex Logger::logMutex;
