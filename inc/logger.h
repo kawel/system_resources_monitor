@@ -22,6 +22,7 @@
 #include <sstream>
 #include <mutex>
 #include <utility>
+#include <iostream>
 
 class Logger
 {
@@ -48,11 +49,14 @@ public:
         std::stringstream ss;
         Log(ss, std::forward<Args>(args)...);
         std::string logLevelStr = LogLevelToString(logLevel);
-        #ifdef USE_SYSLOG 
-            syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
-        #else
-            printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
-        #endif
+#ifdef USE_SYSLOG
+        syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
+#endif
+#ifdef USE_STDOUT
+        // printf("[%s] %s\n", logLevelStr.c_str(), ss.str().c_str());
+        // change printf to cout
+        std::cout << "[" << logLevelStr << "] " << ss.str() << std::endl;
+#endif
     }
 
     template <class... Args>

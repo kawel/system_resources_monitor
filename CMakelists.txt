@@ -38,7 +38,16 @@ target_link_libraries(${PROJECT_NAME} ${MOSQUITTO_LIBRARIES})
 
 # Add compile definitions for Release build
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSLOG)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    USE_SYSLOG
+    )
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    USE_SYSLOG 
+    USE_STDOUT
+    )
 endif()
 
 # Print the build type
