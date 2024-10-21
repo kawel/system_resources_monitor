@@ -38,7 +38,7 @@ int SysMonitor::Initialize()
 
 void SysMonitor::Deinit()
 {
-    _client->~MqttClient();
+    _client.reset();
     // _client->disconnect();
     // _client.reset();
 }
