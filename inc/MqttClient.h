@@ -40,17 +40,32 @@ private:
     {
         if (result == 0)
         {
-            std::cout << "Connected to broker" << std::endl;
+            Logger::LogNotice("...broker connected");
+            static_cast<MqttClient *>(obj)->_connected = true;
         }
         else
         {
-            std::cerr << "Failed to connect to broker: " << mosquitto_strerror(result) << std::endl;
+            Logger::LogError("Failed to connect to broker:", mosquitto_strerror(result));
+            static_cast<MqttClient *>(obj)->_connected = false;
+        }
+    }
+
+    static void onDisconnect(struct mosquitto *mosq, void *obj, int result)
+    {
+        if (result == 0)
+        {
+            Logger::LogWarning("...broker disconnected");
+            static_cast<MqttClient *>(obj)->_connected = false;
+        }
+        else
+        {
+            Logger::LogError("Failed to disconnect from broker:", mosquitto_strerror(result));
         }
     }
 
     static void onMessage(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
     {
-        std::cout << "Received message: " << (char *)msg->payload << " on topic: " << msg->topic << std::endl;
+        Logger::LogDebug("Received message: ", (char *)msg->payload, " on topic: ", msg->topic);
     }
 
     std::string _clientId;
@@ -58,4 +73,7 @@ private:
     int _port;
     int _keepAlive;
     struct mosquitto *_mosq;
+
+protected:
+    bool _connected = false;
 };
