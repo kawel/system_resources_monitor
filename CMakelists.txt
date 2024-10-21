@@ -35,6 +35,18 @@ include_directories(${MOSQUITTO_INCLUDE_DIRS})
 # Link the Mosquitto library to the executable
 target_link_libraries(${PROJECT_NAME} ${MOSQUITTO_LIBRARIES})
 
+# Add compile definitions for Release build
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_SYSLOG)
+endif()
+
 # Print the build type
+message("====================================================")
 message(STATUS "[INFO] Build type: ${CMAKE_BUILD_TYPE}")
+# Print all used target definitions:
+get_target_property(TARGET_COMPILE_DEFINITIONS ${PROJECT_NAME} COMPILE_DEFINITIONS)
+message(STATUS "[INFO] Target compile definitions: ${TARGET_COMPILE_DEFINITIONS}")
+message("====================================================")
+
+
 

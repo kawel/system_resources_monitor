@@ -6,28 +6,13 @@ std::mutex Logger::logMutex;
 void Logger::Initialize(int logLevel, const char* ident, int facility) {
     setlogmask(LOG_UPTO(logLevel));
     openlog(ident, LOG_PID | LOG_NDELAY, facility);
+    #ifdef USE_SYSLOG
+        printf("Logger is using syslog\n");
+    #else
+        printf("Logger is using printf\n");
+    #endif
 }
 
-template <class T>
-void Logger::Log(std::stringstream& ss, T&& t) {
-    ss << ' ' << std::forward<T>(t);
-}
-
-template <class T, class... Args>
-void Logger::Log(std::stringstream& ss, T&& t, Args&&... args) {
-    Log(ss, std::forward<T>(t));
-    Log(ss, std::forward<Args>(args)...);
-}
-
-template <class... Args>
-void Logger::Log(int logLevel, Args&&... args) {
-    std::lock_guard<std::mutex> lock(logMutex);
-    std::stringstream ss;
-    Log(ss, std::forward<Args>(args)...);
-    std::string logLevelStr = LogLevelToString(logLevel);
-    printf("LogLevel %d: [%s] %s\n", logLevel, logLevelStr.c_str(), ss.str().c_str());
-    // syslog(logLevel, "[%s] %s", logLevelStr.c_str(), ss.str().c_str());
-}
 
 void Logger::Deinit() {
     closelog();
@@ -46,9 +31,3 @@ std::string Logger::LogLevelToString(int logLevel) {
         default:          return "UNKNOWN";
     }
 }
-
-// Explicit instantiation of template methods
-template void Logger::Log(std::stringstream& ss, const char*&& t);
-template void Logger::Log(std::stringstream& ss, const char*&& t, const char*&& t2);
-template void Logger::Log(int logLevel, const char*&& t);
-template void Logger::Log(int logLevel, const char*&& t, const char*&& t2);
