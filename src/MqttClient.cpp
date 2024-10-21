@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 
 #include "MqttClient.h"
 #include "logger.h"
@@ -20,6 +22,7 @@ MqttClient::MqttClient(const std::string &clientId, const std::string &host, int
 
     mosquitto_connect_callback_set(_mosq, onConnect);
     mosquitto_message_callback_set(_mosq, onMessage);
+    mosquitto_disconnect_callback_set(_mosq, onDisconnect);
 }
 
 MqttClient::MqttClient(const MqttCfg &cfg)
@@ -45,13 +48,15 @@ bool MqttClient::connect()
         Logger::LogError("Failed to connect to broker:", mosquitto_strerror(res));
         return false;
     }
-    Logger::LogDebug("Connected to broker:", _host, ":", _port);
+    Logger::LogInfo("Connecting to broker:", _host, ":", _port);
     return true;
 }
 
 void MqttClient::disconnect()
 {
     mosquitto_disconnect(_mosq);
+    // 1s delau to allow the network loop to run
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     mosquitto_loop_stop(_mosq, true);
 }
 
