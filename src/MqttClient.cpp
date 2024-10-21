@@ -1,103 +1,54 @@
-#include <MqttClient.h>
+#include <mosquitto.h>
 #include <iostream>
-#include <logger.h>
-#include <MqttMsg.h>
-#include <functional>
-#include <map>
-#include <chrono>
-#include <thread>
+#include <cstring>
+#include <stdexcept>
 
-namespace
+#include "MqttClient.h"
+// #include "logger.h"
+
+MqttClient::MqttClient(const std::string &clientId, const std::string &host, int port)
+    : _clientId(clientId), _host(host), _port(port)
 {
-//    std::map<MqttMessage::MqttTopicSub, std::function<void(MqttMessage::MqttTopicSub, uint8_t*, std::size_t)>> _actionForTopic;
+    mosquitto_lib_init();
+    _mosq = mosquitto_new(_clientId.c_str(), true, this);
+    if (!_mosq)
+    {
+        throw std::runtime_error("Failed to create Mosquitto instance");
+        // Logger::Log(ERROR, "Failed to create Mosquitto instance");
+    }
 
-   void OnMessage(mosquitto *mosq, void *obj, const struct mosquitto_message* message)
-   {
-      Logger::Log(DEBUG, "Received MQTT message ", message->topic);
-    //   auto topic =  MqttMessage::getTopicSubFromString(message->topic);
-
-    //   if(topic == MqttMessage::MqttTopicSub::unsupported)
-    //   {
-    //      Logger::Log(INFO, "Unsupported topic ", message->topic);
-    //      return;
-    //   }
-
-    //   auto iter = _actionForTopic.find(topic);
-    //   if(iter != _actionForTopic.end())
-    //   {
-    //      auto topic = (*iter).first;
-    //      auto action = (*iter).second;
-    //      action(topic, (uint8_t*)message->payload, message->payloadlen);
-    //   }
-    //   else
-    //   {
-    //      Logger::Log(INFO, "Cannot find action for ", message->topic);
-    //   }
-   }
+    mosquitto_connect_callback_set(_mosq, onConnect);
+    mosquitto_message_callback_set(_mosq, onMessage);
 }
 
-MosquittoManager::MosquittoManager(const MqttCfg& cfg) : _cfg(cfg)
+MqttClient::~MqttClient()
 {
+    mosquitto_destroy(_mosq);
+    mosquitto_lib_cleanup();
 }
 
-bool MosquittoManager::Initialize()
+bool MqttClient::connect()
 {
-   auto res = mosquitto_lib_init();
-   if(res != MOSQ_ERR_SUCCESS)
-   {
-      Logger::Log(ERR, "Cannot initialize mosquittto lib!");
-      return false;
-   }
-   _mosq = mosquitto_new(_cfg._clientName.c_str(), true, nullptr);
-   if(_mosq == nullptr)
-   {
-      Logger::Log(INFO, "Cannot initialize mosquittto!");
-      return false;
-   }
-
-   mosquitto_message_callback_set(_mosq, OnMessage);
-   res = MOSQ_ERR_NO_CONN;
-
-   while (res != MOSQ_ERR_SUCCESS)
-   {
-      res = mosquitto_connect(_mosq, _cfg._host.c_str(), _cfg._port, _cfg._keepAlive);
-      if(res != MOSQ_ERR_SUCCESS)
-      {
-         Logger::Log("Cannot connect to mosquittto broker! Error Code:", res, " Retry after 5 seconds...");
-         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-      }
-   }
-
-   mosquitto_loop_start(_mosq);
-   return true;
+    int res = mosquitto_connect(_mosq, _host.c_str(), _port, 60);
+    if (res != MOSQ_ERR_SUCCESS)
+    {
+        throw std::runtime_error("Failed to connect to broker");
+        return false;
+    }
+    return true;
 }
 
-void MosquittoManager::Publish(const MqttMessage::MqttTopicPub& topic, uint8_t* buffer, std::size_t size)
+void MqttClient::loop()
 {
-   auto topicStr = MqttMessage::getTopicStringPub(topic);
-   if(topicStr.empty())
-   {
-      Logger::Log("Cannot find topic");
-      return;
-   }
-   auto res = mosquitto_publish(_mosq, nullptr, topicStr.c_str(), size, buffer, 1, false);
+    mosquitto_loop_start(_mosq);
 }
 
-void MosquittoManager::Subscribe(const MqttMessage::MqttTopicSub& topic, std::function<void(MqttMessage::MqttTopicSub, uint8_t*, std::size_t)> action)
+void MqttClient::publish(const std::string &topic, const std::string &message)
 {
-   auto topicStr = MqttMessage::getTopicStringSub(topic);
-   if(topicStr.empty())
-   {
-      Logger::Log("Cannot find topic");
-      return;
-   }
-
-   _actionForTopic.insert({topic, action});
-   mosquitto_subscribe(_mosq, nullptr, topicStr.c_str(), 0);
+    mosquitto_publish(_mosq, nullptr, topic.c_str(), message.size(), message.c_str(), 0, false);
 }
 
-void MosquittoManager::Deinit()
+void MqttClient::subscribe(const std::string &topic)
 {
-   mosquitto_loop_stop(_mosq, true);
-   mosquitto_lib_cleanup();
+    mosquitto_subscribe(_mosq, nullptr, topic.c_str(), 0);
 }

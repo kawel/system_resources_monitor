@@ -13,6 +13,7 @@ set(INCLUDES inc)
 # Set the source files
 set(SOURCES src/main.cpp
     src/logger.cpp
+    src/MqttClient.cpp
 )
 
 # Add the executable target

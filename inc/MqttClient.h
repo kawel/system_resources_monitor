@@ -32,3 +32,35 @@ protected:
    MqttCfg _cfg;
    mosquitto *_mosq{nullptr};
 };
+
+
+class MqttClient {
+public:
+   MqttClient(const std::string &clientId, const std::string &host, int port);
+   ~MqttClient();
+
+   bool connect();
+   void disconnect();
+   void loop();
+   void publish(const std::string &topic, const std::string &message);
+   void subscribe(const std::string &topic);
+    // static void onMessage(struct mosquitto* mosq, void* obj, const struct mosquitto_message* msg);
+
+private:
+    static void onConnect(struct mosquitto* mosq, void* obj, int result) {
+        if (result == 0) {
+            std::cout << "Connected to broker" << std::endl;
+        } else {
+            std::cerr << "Failed to connect to broker: " << mosquitto_strerror(result) << std::endl;
+        }
+    }
+
+    static void onMessage(struct mosquitto* mosq, void* obj, const struct mosquitto_message* msg) {
+        std::cout << "Received message: " << (char*)msg->payload << " on topic: " << msg->topic << std::endl;
+    }
+
+    std::string _clientId;
+    std::string _host;
+    int _port;
+    struct mosquitto* _mosq;
+};

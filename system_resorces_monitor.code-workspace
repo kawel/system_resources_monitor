@@ -10,7 +10,9 @@
 		],
 		"files.associations": {
 			"functional": "cpp",
-			"chrono": "cpp"
+			"chrono": "cpp",
+			"stdexcept": "cpp",
+			"iostream": "cpp"
 		}
 	}
 }
