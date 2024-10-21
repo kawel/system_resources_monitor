@@ -4,17 +4,17 @@
 #include <stdexcept>
 
 #include "MqttClient.h"
-// #include "logger.h"
+#include "logger.h"
 
-MqttClient::MqttClient(const std::string &clientId, const std::string &host, int port)
-    : _clientId(clientId), _host(host), _port(port)
+MqttClient::MqttClient(const std::string &clientId, const std::string &host, int port, int keepAlive)
+    : _clientId(clientId), _host(host), _port(port), _keepAlive(keepAlive)
 {
     mosquitto_lib_init();
     _mosq = mosquitto_new(_clientId.c_str(), true, this);
     if (!_mosq)
     {
+        Logger::LogError("Failed to create Mosquitto instance");
         throw std::runtime_error("Failed to create Mosquitto instance");
-        // Logger::Log(ERROR, "Failed to create Mosquitto instance");
     }
 
     mosquitto_connect_callback_set(_mosq, onConnect);
@@ -23,23 +23,30 @@ MqttClient::MqttClient(const std::string &clientId, const std::string &host, int
 
 MqttClient::~MqttClient()
 {
+    Logger::LogDebug("Destroying Mosquitto instance...");
+    mosquitto_disconnect(_mosq);
+    mosquitto_loop_stop(_mosq, true);
     mosquitto_destroy(_mosq);
     mosquitto_lib_cleanup();
+    Logger::LogDebug("Mosquitto instance destroyed");
 }
 
 bool MqttClient::connect()
 {
-    int res = mosquitto_connect(_mosq, _host.c_str(), _port, 60);
+    int res = mosquitto_connect(_mosq, _host.c_str(), _port, _keepAlive);
     if (res != MOSQ_ERR_SUCCESS)
     {
         throw std::runtime_error("Failed to connect to broker");
+        Logger::LogError("Failed to connect to broker:", mosquitto_strerror(res));
         return false;
     }
+    Logger::LogDebug("Connected to broker:", _host, ":", _port);
     return true;
 }
 
 void MqttClient::loop()
 {
+    Logger::LogDebug("Starting Mosquitto loop");
     mosquitto_loop_start(_mosq);
 }
 
