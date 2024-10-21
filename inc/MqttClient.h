@@ -19,7 +19,7 @@ struct MqttCfg
    }
 };
 
-class MosquittoManager : public IMqttManager
+class MosquittoManager : public IMqttClient
 {
 public:
    MosquittoManager(const MqttCfg &);
@@ -36,7 +36,7 @@ protected:
 
 class MqttClient {
 public:
-   MqttClient(const std::string &clientId, const std::string &host, int port);
+   MqttClient(const std::string &clientId, const std::string &host, int port, int keepAlive = 60);
    ~MqttClient();
 
    bool connect();
@@ -62,5 +62,6 @@ private:
     std::string _clientId;
     std::string _host;
     int _port;
+    int _keepAlive;
     struct mosquitto* _mosq;
 };
