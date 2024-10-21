@@ -14,5 +14,5 @@ class SysMonitor
         
     private:
         MqttCfg _cfg;
-        std::unique_ptr<MqttClient> _client;
+        std::unique_ptr<IMqttClient> _client;
 };

@@ -39,14 +39,16 @@ MqttClient::~MqttClient()
     Logger::LogDebug("Mosquitto instance destroyed");
 }
 
-void MqttClient::Initialize()
+bool MqttClient::Initialize()
 {
     if (!connect())
     {
         throw std::runtime_error("Failed to connect to broker");
+        return false;
     }
 
     loop();
+    return true;
 }
 
 void MqttClient::Deinit()

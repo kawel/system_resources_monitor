@@ -5,23 +5,7 @@
 #include <IMqttClient.h>
 #include "mosquitto.h"
 
-struct MqttCfg
-{
-    std::string _clientName;
-    std::string _host;
-    uint16_t _port;
-    uint8_t _keepAlive;
-
-    MqttCfg(const std::string &clientName, const std::string &host, const uint16_t &port, const uint8_t &keepAlive)
-        : _clientName(clientName),
-          _host(host),
-          _port(port),
-          _keepAlive(keepAlive)
-    {
-    }
-};
-
-class MqttClient
+class MqttClient : public IMqttClient
 {
 public:
     MqttClient() : _clientId{}, _host{}, _port{}, _keepAlive{}, _mosq{nullptr} {};
@@ -29,10 +13,10 @@ public:
     MqttClient(const std::string &clientId, const std::string &host, int port, int keepAlive = 60);
     ~MqttClient();
 
-    void Initialize();
-    void Deinit();
-    void Publish(const std::string &topic, const std::string &message);
-    void Subscribe(const std::string &topic);
+    bool Initialize()  override;
+    void Deinit() override;
+    void Publish(const std::string &topic, const std::string &message) override;
+    void Subscribe(const std::string &topic) override;
 
 private:
     bool connect();
