@@ -4,11 +4,11 @@
 #include <MqttMsg.h>
 #include <functional>
 
-class IMqttManager
+class IMqttClient
 {
 public:
-   IMqttManager(){}
-   virtual ~IMqttManager(){}
+   IMqttClient(){}
+   virtual ~IMqttClient(){}
    virtual bool Initialize() = 0;
    virtual void Publish(const MqttMsg::MqttTopicPub&, uint8_t* buffer, std::size_t size) = 0;
    virtual void Subscribe(const MqttMsg::MqttTopicSub&, std::function<void(MqttMsg::MqttTopicSub, uint8_t*, std::size_t)>) = 0;
