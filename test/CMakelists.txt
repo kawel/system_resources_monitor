@@ -1,5 +1,8 @@
 # Add Google Test
-add_subdirectory(../googletest googletest)
+add_subdirectory(../ext/googletest googletest)
+
+# Set the include directories
+set(INCLUDES ../inc)
 
 # Set the test source files
 set(TEST_SOURCES 
@@ -9,8 +12,11 @@ set(TEST_SOURCES
 # Add the test executable
 add_executable(runTests ${TEST_SOURCES})
 
+# Include the specified include directories
+target_include_directories(runTests PRIVATE ${INCLUDES})
+
 # Link Google Test and the main project
-target_link_libraries(runTests gtest gtest_main ${PROJECT_NAME})
+target_link_libraries(runTests gtest gtest_main)
 
 # Enable testing
 enable_testing()
