@@ -1,0 +1,19 @@
+# Add Google Test
+add_subdirectory(../googletest googletest)
+
+# Set the test source files
+set(TEST_SOURCES 
+    test_HwMonitor.cpp
+)
+
+# Add the test executable
+add_executable(runTests ${TEST_SOURCES})
+
+# Link Google Test and the main project
+target_link_libraries(runTests gtest gtest_main ${PROJECT_NAME})
+
+# Enable testing
+enable_testing()
+
+# Add tests
+add_test(NAME runTests COMMAND runTests)
