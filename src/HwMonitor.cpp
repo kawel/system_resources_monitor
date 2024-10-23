@@ -7,13 +7,11 @@
  */
 
 #include "HwMonitor.h"
+#include "logger.h"
 
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <sstream>
-
-#include "logger.h"
 
 // HwMonitor::HwMonitor()
 // {
@@ -30,11 +28,11 @@
 
 int UpTimeInfo::update()
 {
-    std::ifstream uptimeFile("/proc/uptime");
+    std::ifstream uptimeFile(_uptimeFilePath);
     if (!uptimeFile.is_open())
     {
-        std::cerr << "Failed to open /proc/uptime" << std::endl;
-        Logger::LogWarning("Failed to open /proc/uptime");
+        std::cerr << "Failed to open " << _uptimeFilePath << std::endl;
+        Logger::LogWarning("Failed to open " + _uptimeFilePath);
         _uptime = -1;
         return -1;
     }

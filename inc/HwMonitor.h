@@ -1,6 +1,5 @@
 /**
 * @file: HwMonitor.h
-* @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
 * @brief: 
 * -----
 * Copyright 2024 - KElectronics
@@ -34,15 +33,17 @@
 
 class UpTimeInfo
 {
-  private:
-    /* data */
+private:
     double _uptime;
-  public:
+    std::string _uptimeFilePath;
+
+public:
+    UpTimeInfo(const std::string& uptimeFilePath = "/proc/uptime")
+        : _uptime(0.0), _uptimeFilePath(uptimeFilePath) {}
+
     int update();
-    double get() {return _uptime;}
-    std::string serialize();
-    UpTimeInfo(): _uptime(0.0) {};
-    ~UpTimeInfo() {};
+    double get() const { return _uptime; }
+    std::string serialize() const;
 };
 
 
