@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 // HwMonitor::HwMonitor()
 // {
@@ -49,3 +50,10 @@ int UpTimeInfo::update()
     return 0;
 }
 
+// Define the output stream operator for UpTimeInfo
+std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
+{
+    os << std::fixed << std::setprecision(2) << obj._uptime <<"[s]";
+
+    return os;
+}
