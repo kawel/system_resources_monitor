@@ -4,22 +4,21 @@ add_subdirectory(../ext/googletest googletest)
 # Set the include directories
 set(INCLUDES ../inc)
 
-# Set the test source files
-set(TEST_SOURCES 
-    test_HwMonitor.cpp
-)
+# Set the sources
+set(TEST_SOURCES
+    HwMonitor_test.cpp
+    )
+
+set (MOCK_SOURCES)
 
 # Add the test executable
-add_executable(runTests ${TEST_SOURCES})
+add_executable(runTests ${TEST_SOURCES} ${MOCK_SOURCES})
 
 # Include the specified include directories
 target_include_directories(runTests PRIVATE ${INCLUDES})
 
 # Link Google Test and the main project
 target_link_libraries(runTests gtest gtest_main)
-
-# Enable testing
-enable_testing()
 
 # Add tests
 add_test(NAME runTests COMMAND runTests)

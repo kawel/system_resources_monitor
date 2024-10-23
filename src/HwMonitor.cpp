@@ -15,18 +15,18 @@
 
 #include "logger.h"
 
-HwMonitor::HwMonitor()
-{
-}
+// HwMonitor::HwMonitor()
+// {
+// }
 
-HwMonitor::~HwMonitor()
-{
-}
+// HwMonitor::~HwMonitor()
+// {
+// }
 
-int HwMonitor::getUpTime()
-{
-    return 0;
-}
+// int HwMonitor::getUpTime()
+// {
+//     return 0;
+// }
 
 int UpTimeInfo::update()
 {
