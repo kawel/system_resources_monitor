@@ -1,44 +1,48 @@
-
-// #include <gtest/gtest.h>
-
-
-// TEST(MyTestSuite, MyTestCase) {
-//     // Your test code here
-//     ASSERT_TRUE(true);
-// }
-
-// // Demonstrate some basic assertions.
-// TEST(HelloTest, BasicAssertions) {
-//   // Expect two strings not to be equal.
-//   EXPECT_STRNE("hello", "world");
-//   // Expect equality.
-//   EXPECT_EQ(7 * 6, 42);
-// }
-
 #include "HwMonitor.h"
-
 #include <gtest/gtest.h>
 #include <fstream>
 #include <string>
 
-
 // Helper function to mock /proc/uptime content
-void mockUptimeFile(const std::string& content) {
-    std::ofstream uptimeFile("/tmp/mock_uptime");
-    uptimeFile << content;
-    uptimeFile.close();
+void mockUptimeFile(const std::string& filePath, const std::string& content)
+{
+    std::ofstream mockFile(filePath);
+    mockFile << content;
+    mockFile.close();
 }
 
-TEST(UpTimeInfoTest, UpdateSuccess) {
-    mockUptimeFile("12345.67 54321.00");
-    UpTimeInfo uptimeInfo;
+TEST(HwMonitorUpTimeInfo, UpdateSuccess)
+{
+    const std::string mockFilePath = "/tmp/mock_uptime";
+    mockUptimeFile(mockFilePath, "12345.67 8910.11");
+
+    UpTimeInfo uptimeInfo(mockFilePath);
     EXPECT_EQ(uptimeInfo.update(), 0);
     EXPECT_DOUBLE_EQ(uptimeInfo.get(), 12345.67);
 }
 
-// TEST(UpTimeInfoTest, UpdateFail) {
-//     mockUptimeFile(""); // Empty content to simulate failure
-//     UpTimeInfo uptimeInfo;
-//     EXPECT_EQ(uptimeInfo.update(), -1);
-//     EXPECT_DOUBLE_EQ(uptimeInfo.get(), -1);
+TEST(HwMonitorUpTimeInfo, UpdateFailed)
+{
+    const std::string mockFilePath = "/tmp/mock_uptime";
+    mockUptimeFile(mockFilePath, "-42"); // Empty content to simulate failure
+
+    UpTimeInfo uptimeInfo(mockFilePath);
+    EXPECT_EQ(uptimeInfo.update(), 0);
+    EXPECT_DOUBLE_EQ(uptimeInfo.get(), -42);
+}
+
+
+TEST(HwMonitorUpTimeInfo, FunftionalTest)
+{
+    UpTimeInfo uptimeInfo;
+    EXPECT_EQ(uptimeInfo.update(), 0);
+    EXPECT_GE(uptimeInfo.get(), 0);
+
+    std::cout << "UpTime: " << uptimeInfo.get() << std::endl; 
+}
+
+// int main(int argc, char **argv)
+// {
+//     ::testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
 // }

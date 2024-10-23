@@ -66,6 +66,11 @@
 			"streambuf": "cpp",
 			"thread": "cpp",
 			"typeinfo": "cpp"
-		}
+		},
+		"testExplorer.useNativeTesting": true,
+		"testExplorer.addToEditorContextMenu": true,
+		"gcovViewer.buildDirectories": [
+			"/mnt/e/projects/posejdon_system/apps/system_resorces_monitor/build"
+		]
 	}
 }
