@@ -37,11 +37,12 @@ class UpTimeInfo
 {
 private:
     double _uptime;
-    std::string _uptimeFilePath;
+
+protected:
+    std::string _filePath;
 
 public:
-    UpTimeInfo(const std::string &uptimeFilePath = "/proc/uptime")
-        : _uptime(0.0), _uptimeFilePath(uptimeFilePath) {}
+    UpTimeInfo(): _uptime{0.0}, _filePath{"/proc/uptime"} {}
 
     int update();
     double get() const { return _uptime; }
@@ -57,7 +58,8 @@ private:
     double _load_1 = 0;
     double _load_5 = 0;
     double _load_15 = 0;
-
+    
+protected:
     std::string _filePath;
 
 public:
@@ -67,9 +69,6 @@ public:
     std::string serialize() const;
 
     friend std::ostream &operator<<(std::ostream &os, const LoadAvg &obj);
-
-protected:
-    void setFilePath(const std::string &filePath) { _filePath = filePath;};
 };
 
 

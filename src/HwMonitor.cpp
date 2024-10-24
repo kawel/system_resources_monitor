@@ -30,10 +30,10 @@
 
 int UpTimeInfo::update()
 {
-    std::ifstream uptimeFile(_uptimeFilePath);
+    std::ifstream uptimeFile(_filePath);
     if (!uptimeFile.is_open())
     {
-        Logger::LogWarning("Failed to open " + _uptimeFilePath);
+        Logger::LogWarning("Failed to open " + _filePath);
         _uptime = -1;
         return -1;
     }

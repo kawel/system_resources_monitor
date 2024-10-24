@@ -12,12 +12,19 @@ void mockUpFile(const std::string &filePath, const std::string &content)
     mockFile.close();
 }
 
+class TestUpTimeInfo : public UpTimeInfo
+{
+public:
+    void setFilePath(const std::string &filePath) { _filePath = filePath;};
+};
+
 TEST(HwMonitorUpTimeInfo, UpdateSuccess)
 {
     const std::string mockFilePath = "/tmp/mock_uptime";
     mockUpFile(mockFilePath, "12345.67 8910.11");
 
-    UpTimeInfo uptimeInfo(mockFilePath);
+    TestUpTimeInfo uptimeInfo;
+    uptimeInfo.setFilePath(mockFilePath);
     EXPECT_EQ(uptimeInfo.update(), 0);
     EXPECT_DOUBLE_EQ(uptimeInfo.get(), 12345.67);
 }
@@ -27,7 +34,8 @@ TEST(HwMonitorUpTimeInfo, UpdateFailed)
     const std::string mockFilePath = "/tmp/mock_uptime";
     mockUpFile(mockFilePath, "-42"); // Empty content to simulate failure
 
-    UpTimeInfo uptimeInfo(mockFilePath);
+    TestUpTimeInfo uptimeInfo;
+    uptimeInfo.setFilePath(mockFilePath);
     EXPECT_EQ(uptimeInfo.update(), 0);
     EXPECT_DOUBLE_EQ(uptimeInfo.get(), -42);
 }
@@ -37,7 +45,8 @@ TEST(HwMonitorUpTimeInfo, Ostream)
     const std::string mockFilePath = "/tmp/mock_uptime";
     mockUpFile(mockFilePath, "12345.67 8910.11");
 
-    UpTimeInfo uptimeInfo(mockFilePath);
+    TestUpTimeInfo uptimeInfo;
+    uptimeInfo.setFilePath(mockFilePath);
     uptimeInfo.update();
 
     std::ostringstream oss;
@@ -45,7 +54,7 @@ TEST(HwMonitorUpTimeInfo, Ostream)
     EXPECT_EQ(oss.str(), "12345.67[s]");
 }
 
-TEST(HwMonitorUpTimeInfo, FunftionalTest)
+TEST(HwMonitorUpTimeInfo, FunctionalTest)
 {
     UpTimeInfo uptimeInfo;
     EXPECT_EQ(uptimeInfo.update(), 0);
@@ -58,7 +67,7 @@ TEST(HwMonitorUpTimeInfo, FunftionalTest)
 class TestLoadAvg : public LoadAvg
 {
 public:
-    using LoadAvg::setFilePath; // Expose the protected method as public
+    void setFilePath(const std::string &filePath) { _filePath = filePath;};
 };
 
 TEST(HwMonitorLoadAvg, UpdateSuccess)
@@ -132,12 +141,12 @@ public:
 TEST(HwMonitorVersionInfo, UpdateSuccess)
 {
     const std::string mockFilePath = "/tmp/mock_version";
-    mockUpFile(mockFilePath, "Linux version 5.4.0-42-generic (buildd@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
+    mockUpFile(mockFilePath, "Linux version 5.4.0-42-generic (build@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
 
     TestVersionInfo versionInfo{};
     versionInfo.setFilePath(mockFilePath);
     versionInfo.update();
-    EXPECT_EQ(versionInfo.get(), "Linux version 5.4.0-42-generic (buildd@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
+    EXPECT_EQ(versionInfo.get(), "Linux version 5.4.0-42-generic (build@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
 }
 
 TEST(HwMonitorVersionInfo, UpdateFailed_EmptyContent)
@@ -159,4 +168,28 @@ TEST(HwMonitorVersionInfo, UpdateFailed_NoFile)
     versionInfo.setFilePath(mockFilePath);
     versionInfo.update();
     EXPECT_EQ(versionInfo.get(), "N/A");
+}
+
+TEST(HwMonitorVersionInfo, Ostream)
+{
+    const std::string mockFilePath = "/tmp/mock_version";
+    mockUpFile(mockFilePath, "Linux version 5.4.0-42-generic (build@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
+
+    TestVersionInfo versionInfo{};
+    versionInfo.setFilePath(mockFilePath);
+    versionInfo.update();
+
+    std::ostringstream oss;
+    oss << versionInfo;
+    EXPECT_EQ(oss.str(), "Linux version 5.4.0-42-generic (build@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
+}
+
+
+TEST(HwMonitorVersionInfo, FunctionalTest)
+{
+    VersionInfo versionInfo;
+    EXPECT_EQ(versionInfo.update(), 0);
+    EXPECT_NE(versionInfo.get(), "N/A");
+
+    std::cout << "Version: " << versionInfo.get() << std::endl;
 }
