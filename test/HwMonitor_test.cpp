@@ -193,3 +193,18 @@ TEST(HwMonitorVersionInfo, FunctionalTest)
 
     std::cout << "Version: " << versionInfo.get() << std::endl;
 }
+
+
+TEST(HwMonitorMemInfo, FunctionalTest)
+{
+    MemInfo memInfo;
+    EXPECT_EQ(memInfo.update(), 0);
+    EXPECT_GT(memInfo.getMemTotal(), 0);
+    EXPECT_GT(memInfo.getMemFree(), 0);
+    EXPECT_GT(memInfo.getMemAvailable(), 0);
+
+    std::cout << "Total memory: " << memInfo.getMemTotal() << std::endl;
+    std::cout << memInfo;
+}
+
+

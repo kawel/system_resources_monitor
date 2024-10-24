@@ -71,7 +71,6 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const LoadAvg &obj);
 };
 
-
 class VersionInfo
 {   
 private:
@@ -85,4 +84,30 @@ public:
     std::string serialize() const;
 
     friend std::ostream &operator<<(std::ostream &os, const VersionInfo &obj);
+};
+
+class MemInfo
+{
+    private:
+        double _total;
+        double _free;
+        double _available;
+        double _buffers;
+        double _cached;
+        double _swap_total;
+        double _swap_free;
+        double _swap_cached;
+    protected:
+        std::string _filePath;
+
+    public:
+        MemInfo() : _total{0.0}, _free{0.0}, _available{0.0}, _buffers{0.0}, _cached{0.0}, _swap_total{0.0}, _swap_free{0.0}, _swap_cached{0.0}, _filePath{"/proc/meminfo"} {};
+        int update();
+        std::tuple<double, double, double, double, double, double, double, double, double> get() const;
+        double getMemTotal() const { return _total; };
+        double getMemFree() const { return _free; };
+        double getMemAvailable() const { return _available; };
+        std::string serialize() const;
+
+        friend std::ostream &operator<<(std::ostream &os, const MemInfo &obj);
 };

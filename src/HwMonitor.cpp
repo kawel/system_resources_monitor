@@ -121,3 +121,47 @@ std::ostream &operator<<(std::ostream &os, const VersionInfo &obj)
 
     return os;
 }
+
+int MemInfo::update()
+{
+    std::ifstream memInfoFile(_filePath);
+    if (!memInfoFile.is_open())
+    {
+        Logger::LogWarning("Failed to open " + _filePath);
+        _total = _free = _available = -1;
+        _buffers = _cached = -1;
+        _swap_total = _swap_free = _swap_cached = -1;
+        return -1;
+    }
+
+    std::string line;
+    while (std::getline(memInfoFile, line))
+    {
+        std::istringstream iss(line);
+        std::string key;
+        iss >> key;
+        if (key == "MemTotal:")
+        {
+            iss >> _total;
+        }
+        else if (key == "MemFree:")
+        {
+            iss >> _free;
+        }
+        else if (key == "MemAvailable:")
+        {
+            iss >> _available;
+            break;
+        }
+    }
+    memInfoFile.close();
+
+    return 0;
+}
+
+std::ostream &operator<<(std::ostream &os, const MemInfo &obj)
+{
+    os << std::fixed << std::setprecision(2) << "MemTotal: " << obj._total << " kB, MemFree: " << obj._free << " kB, MemAvailable: " << obj._available << " kB";
+
+    return os;
+}
