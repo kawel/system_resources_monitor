@@ -292,3 +292,52 @@ TEST(HwMonitorIpLinkStatistics, _readIntValueFromFile)
 }
 
 
+TEST(HwMonitorIpLinkStatistics, UpdateSuccess)
+{
+    const std::string mockFilePath = "/tmp/eth0/statistics/rx_bytes";
+    const std::string content = "12345";
+
+    createFileWithDirectories(mockFilePath, content);
+
+    TestIpLinkStatistics ipLinkStatistics{"eth0"};
+    ipLinkStatistics.setFilePath("/tmp/");
+    EXPECT_EQ(ipLinkStatistics.update(), 0);
+
+    EXPECT_EQ(ipLinkStatistics.getRxBytes(), 12345);
+    EXPECT_EQ(ipLinkStatistics.getTxBytes(), -1);
+}
+
+TEST(HwMonitorIpLinkStatistics, FunstionalTest)
+{
+    IpLinkStatistics ipLinkStatistics;
+    EXPECT_EQ(ipLinkStatistics.update(), 0);
+
+    int rxBytes, rxPackets, rxErrors, rxDropped, txBytes, txPackets, txErrors, txDropped;
+    std::tie(rxBytes, rxPackets, rxErrors, rxDropped, txBytes, txPackets, txErrors, txDropped) = ipLinkStatistics.get();
+    EXPECT_GE(rxBytes, 0);
+    EXPECT_GE(rxPackets, 0);
+    EXPECT_GE(rxErrors, 0);
+    EXPECT_GE(rxDropped, 0);
+    EXPECT_GE(txBytes, 0);
+    EXPECT_GE(txPackets, 0);
+    EXPECT_GE(txErrors, 0);
+    EXPECT_GE(txDropped, 0);
+
+    std::cout << "RxBytes: " << rxBytes << std::endl;
+    std::cout << "TxBytes: " << txBytes << std::endl;
+}
+
+TEST(HwMonitorIpLinkStatistics, OStream)
+{
+    IpLinkStatistics ipLinkStatistics("eth0");
+    ipLinkStatistics.update();
+    std::cout << ipLinkStatistics;
+
+    IpLinkStatistics ipLinkStatistics2("lo");
+    ipLinkStatistics2.update();
+    std::cout << ipLinkStatistics2;
+
+    IpLinkStatistics ipLinkStatistics3("bad_ifc");
+    ipLinkStatistics3.update();
+    std::cout << ipLinkStatistics3;
+}

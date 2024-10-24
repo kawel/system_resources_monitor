@@ -135,6 +135,7 @@ int MemInfo::update()
     }
 
     std::string line;
+    std::getline(memInfoFile, line);
     if (line.empty())
     {
         _total = _free = _available = -1;
@@ -145,7 +146,7 @@ int MemInfo::update()
         return -1;
     }
 
-    while (std::getline(memInfoFile, line))
+    do
     {
 
         std::istringstream iss(line);
@@ -165,6 +166,8 @@ int MemInfo::update()
             break;
         }
     }
+    while (std::getline(memInfoFile, line));
+
     memInfoFile.close();
 
     return 0;
@@ -195,12 +198,38 @@ int IpLinkStatistics::_readIntValueFromFile(const std::string &fileName)
     return value;
 }
 
+std::tuple<int, int, int, int, int, int, int, int> IpLinkStatistics::get() const
+{
+    return std::make_tuple(_rx_bytes, _rx_packets, _rx_errors, _rx_dropped, _tx_bytes, _tx_packets, _tx_errors, _tx_dropped);
+}
+
 int IpLinkStatistics::update()
 {
-    // read statistics from file in , _filePath{"/sys/class/net/"}
-    // build path to file from _filePath and _interfaceName + "/statistics"
+    // check if the interface directory exists
+    std::string interfaceDir = _filePath + _interfaceName;
+    std::ifstream dir(interfaceDir);
+    if (!dir.is_open())
+    {
+        Logger::LogWarning("Failed to open " + interfaceDir);
+        return -1;
+    }
 
-    std::ifstream ipLinkStatisticsFile(_filePath);
+    _rx_bytes = _readIntValueFromFile("rx_bytes");
+    _rx_packets = _readIntValueFromFile("rx_packets");
+    _rx_errors = _readIntValueFromFile("rx_errors");
+    _rx_dropped = _readIntValueFromFile("rx_dropped");
+    _tx_bytes = _readIntValueFromFile("tx_bytes");
+    _tx_packets = _readIntValueFromFile("tx_packets");
+    _tx_errors = _readIntValueFromFile("tx_errors");
+    _tx_dropped = _readIntValueFromFile("tx_dropped");
 
     return 0;
+}
+
+std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
+{
+    os << "RX: " << obj._rx_bytes << " bytes, " << obj._rx_packets << " packets, " << obj._rx_errors << " errors, " << obj._rx_dropped << " dropped" << std::endl;
+    os << "TX: " << obj._tx_bytes << " bytes, " << obj._tx_packets << " packets, " << obj._tx_errors << " errors, " << obj._tx_dropped << " dropped" << std::endl;
+
+    return os;
 }
