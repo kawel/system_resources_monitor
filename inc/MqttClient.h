@@ -12,10 +12,11 @@
 
 #pragma once
 
-#include "logger.h"
+#include "IMqttClient.h"
 
-#include <IMqttClient.h>
 #include "mosquitto.h"
+
+#include "logger.h"
 
 class MqttClient : public IMqttClient
 {

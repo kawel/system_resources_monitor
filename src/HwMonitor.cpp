@@ -14,19 +14,6 @@
 #include <sstream>
 #include <iomanip>
 
-// HwMonitor::HwMonitor()
-// {
-// }
-
-// HwMonitor::~HwMonitor()
-// {
-// }
-
-// int HwMonitor::getUpTime()
-// {
-//     return 0;
-// }
-
 int UpTimeInfo::update()
 {
     std::ifstream uptimeFile(_filePath);
@@ -49,7 +36,6 @@ int UpTimeInfo::update()
     return 0;
 }
 
-// Define the output stream operator for UpTimeInfo
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
 {
     os << std::fixed << std::setprecision(2) << obj._uptime << "[s]";

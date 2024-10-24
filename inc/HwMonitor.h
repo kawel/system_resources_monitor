@@ -15,24 +15,6 @@
 #include <iostream>
 #include <tuple>
 
-// class HwMonitor
-// {
-// private:
-//     /* data */
-//     int up_time;
-// public:
-//     HwMonitor(/* args */);
-//     ~HwMonitor();
-//     int getUpTime();
-//     int getTemp();
-//     int getRamUsage();
-//     int getCpuUsage();
-//     int getDiskUsage();
-//     int getNetUsage();
-//     int getNetSpeed();
-
-// };
-
 class UpTimeInfo
 {
 private:
@@ -151,3 +133,4 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj);
 };
+
