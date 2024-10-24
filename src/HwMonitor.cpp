@@ -14,7 +14,6 @@
 #include <sstream>
 #include <iomanip>
 
-
 // HwMonitor::HwMonitor()
 // {
 // }
@@ -53,7 +52,7 @@ int UpTimeInfo::update()
 // Define the output stream operator for UpTimeInfo
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
 {
-    os << std::fixed << std::setprecision(2) << obj._uptime <<"[s]";
+    os << std::fixed << std::setprecision(2) << obj._uptime << "[s]";
 
     return os;
 }
@@ -78,13 +77,14 @@ int LoadAvg::update()
     return 0;
 }
 
-std::tuple<double, double, double> LoadAvg::get() const {
+std::tuple<double, double, double> LoadAvg::get() const
+{
     return std::make_tuple(_load_1, _load_5, _load_15);
 }
 
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
 {
-    os << std::fixed << std::setprecision(2) << obj._load_1 << "[%], " << obj._load_5 << "[%], " << obj._load_15 <<"[%]";
+    os << std::fixed << std::setprecision(2) << obj._load_1 << "[%], " << obj._load_5 << "[%], " << obj._load_15 << "[%]";
 
     return os;
 }
@@ -135,8 +135,19 @@ int MemInfo::update()
     }
 
     std::string line;
+    if (line.empty())
+    {
+        _total = _free = _available = -1;
+        _buffers = _cached = -1;
+        _swap_total = _swap_free = _swap_cached = -1;
+    
+        memInfoFile.close();
+        return -1;
+    }
+
     while (std::getline(memInfoFile, line))
     {
+
         std::istringstream iss(line);
         std::string key;
         iss >> key;
@@ -164,4 +175,32 @@ std::ostream &operator<<(std::ostream &os, const MemInfo &obj)
     os << std::fixed << std::setprecision(2) << "MemTotal: " << obj._total << " kB, MemFree: " << obj._free << " kB, MemAvailable: " << obj._available << " kB";
 
     return os;
+}
+
+int IpLinkStatistics::_readIntValueFromFile(const std::string &fileName)
+{
+    std::string filePath = _filePath + _interfaceName + "/statistics/" + fileName;
+
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        Logger::LogWarning("Failed to open " + filePath);
+        return -1;
+    }
+
+    int value;
+    file >> value;
+    file.close();
+
+    return value;
+}
+
+int IpLinkStatistics::update()
+{
+    // read statistics from file in , _filePath{"/sys/class/net/"}
+    // build path to file from _filePath and _interfaceName + "/statistics"
+
+    std::ifstream ipLinkStatisticsFile(_filePath);
+
+    return 0;
 }

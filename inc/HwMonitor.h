@@ -15,6 +15,7 @@
 #include <iostream>
 #include <tuple>
 
+
 // class HwMonitor
 // {
 // private:
@@ -110,4 +111,41 @@ class MemInfo
         std::string serialize() const;
 
         friend std::ostream &operator<<(std::ostream &os, const MemInfo &obj);
+};
+
+class IpLinkStatistics
+{
+    private:
+        int _rx_bytes;
+        int _rx_packets;
+        int _rx_errors;
+        int _rx_dropped;
+        int _tx_bytes;
+        int _tx_packets;
+        int _tx_errors;
+        int _tx_dropped;
+        std::string _interfaceName;
+
+    protected:
+        int _readIntValueFromFile(const std::string& fileName);
+        std::string _filePath;
+
+    public:
+        IpLinkStatistics() : _interfaceName{"eth0"}, _filePath{"/sys/class/net/"} {};
+        IpLinkStatistics(const std::string &interface) : _interfaceName{interface}, _filePath{"/sys/class/net/"}  {};
+        int update();
+        void setIpLinkInterface(const std::string &interface) { _interfaceName = interface; };
+        std::tuple<int, int, int, int, int, int, int, int> get() const;
+        int getRxBytes() const { return _rx_bytes; };
+        int getRxPackets() const { return _rx_packets; };
+        int getRxErrors() const { return _rx_errors; };
+        int getRxDropped() const { return _rx_dropped; };
+        int getTxBytes() const { return _tx_bytes; };
+        int getTxPackets() const { return _tx_packets; };
+        int getTxErrors() const { return _tx_errors; };
+        int getTxDropped() const { return _tx_dropped; };
+    
+        std::string serialize() const;
+
+        friend std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj);
 };

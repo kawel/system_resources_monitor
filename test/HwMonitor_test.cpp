@@ -184,7 +184,6 @@ TEST(HwMonitorVersionInfo, Ostream)
     EXPECT_EQ(oss.str(), "Linux version 5.4.0-42-generic (build@lgw01-amd64-039) (gcc version 9.3.0 (Ubuntu 9.3.0-10ubuntu2)) #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020");
 }
 
-
 TEST(HwMonitorVersionInfo, FunctionalTest)
 {
     VersionInfo versionInfo;
@@ -194,6 +193,43 @@ TEST(HwMonitorVersionInfo, FunctionalTest)
     std::cout << "Version: " << versionInfo.get() << std::endl;
 }
 
+class TestMemInfo : public MemInfo
+{
+public:
+    void setFilePath(const std::string &filePath) { _filePath = filePath;};// Expose the protected member as public
+};
+
+TEST(HwMonitorMemInfo, UpdateSuccess)
+{
+    const std::string mockFilePath = "/tmp/mock_meminfo";
+    mockUpFile(mockFilePath, "MemTotal: 16384 kB\nMemFree: 1234 kB\nMemAvailable: 5678 kB");
+
+    TestMemInfo memInfo{};
+    memInfo.setFilePath(mockFilePath);
+    EXPECT_EQ(memInfo.update(), 0);
+    EXPECT_GT(memInfo.getMemTotal(), 0);
+    EXPECT_GT(memInfo.getMemFree(), 0);
+    EXPECT_GT(memInfo.getMemAvailable(), 0);
+}
+
+TEST(HwMonitorMemInfo, UpdateFailed)
+{
+    const std::string mockFilePath = "/tmp/mock_meminfo";
+    mockUpFile(mockFilePath, ""); // Empty content to simulate failure
+
+    TestMemInfo memInfo{};
+    memInfo.setFilePath(mockFilePath);
+    EXPECT_EQ(memInfo.update(), -1);
+    EXPECT_EQ(memInfo.getMemTotal(), -1);
+    EXPECT_EQ(memInfo.getMemFree(), -1);
+    EXPECT_EQ(memInfo.getMemAvailable(), -1);
+
+    memInfo.setFilePath("/tmp/mxx");
+    EXPECT_EQ(memInfo.update(), -1);    
+    EXPECT_EQ(memInfo.getMemTotal(), -1);
+    EXPECT_EQ(memInfo.getMemFree(), -1);
+    EXPECT_EQ(memInfo.getMemAvailable(), -1);
+}
 
 TEST(HwMonitorMemInfo, FunctionalTest)
 {
@@ -205,6 +241,54 @@ TEST(HwMonitorMemInfo, FunctionalTest)
 
     std::cout << "Total memory: " << memInfo.getMemTotal() << std::endl;
     std::cout << memInfo;
+}
+
+class TestIpLinkStatistics : public IpLinkStatistics
+{
+    public:
+        void setFilePath(const std::string &filePath) { _filePath = filePath;};
+        TestIpLinkStatistics(const std::string &interface) : IpLinkStatistics{interface} {};
+        using IpLinkStatistics::_readIntValueFromFile;
+};
+
+void createFileWithDirectories(const std::string& filePath, const std::string& content) {
+    // Extract the directory path from the file path
+    std::string dirPath = filePath.substr(0, filePath.find_last_of('/'));
+
+    // Create the directory structure using mkdir -p
+    std::string command = "mkdir -p " + dirPath;
+    if (system(command.c_str()) != 0) {
+        std::cerr << "Failed to create directories: " << dirPath << std::endl;
+        return;
+    }
+
+    // Create and write to the file
+    std::ofstream file(filePath);
+    if (file.is_open()) {
+        file << content;
+        file.close();
+    } else {
+        std::cerr << "Failed to create file: " << filePath << std::endl;
+    }
+}
+
+TEST(HwMonitorIpLinkStatistics, _readIntValueFromFile)
+{
+    const std::string mockFilePath = "/tmp/eth0/statistics/mock_ip_link";
+    const std::string content = "12345";
+
+    createFileWithDirectories(mockFilePath, content);
+    // mockUpFile(mockFilePath, "12345");
+
+    TestIpLinkStatistics ipLinkStatistics{"eth0"};
+    ipLinkStatistics.setFilePath("/tmp/");
+    EXPECT_EQ(ipLinkStatistics._readIntValueFromFile("mock_ip_link"), 12345);
+
+    EXPECT_EQ(ipLinkStatistics._readIntValueFromFile("mock_ip_linkX"), -1);
+
+    mockUpFile(mockFilePath, "d|_|pa");
+    EXPECT_EQ(ipLinkStatistics._readIntValueFromFile("mock_ip_link"), 0);
+
 }
 
 
