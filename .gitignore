@@ -53,3 +53,4 @@ dkms.conf
 
 # Build folder
 build/
+test/nr_app/.sys_mon.json.backup

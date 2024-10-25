@@ -1,9 +1,22 @@
+/**
+* @file: MqttClient.h
+* @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+* @brief: 
+* -----
+* Copyright 2024 - KElectronics
+* -----
+* HISTORY:
+* Date      	By	Comments
+* ----------	---	---------------------------------------------------------
+*/
+
 #pragma once
 
-#include "logger.h"
+#include "IMqttClient.h"
 
-#include <IMqttClient.h>
 #include "mosquitto.h"
+
+#include "logger.h"
 
 class MqttClient : public IMqttClient
 {

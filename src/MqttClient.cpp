@@ -1,3 +1,11 @@
+/**
+* @file: MqttClient.cpp
+* @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+* @brief: 
+* -----
+* Copyright 2024 - KElectronics
+*/
+
 #include <mosquitto.h>
 #include <iostream>
 #include <cstring>
