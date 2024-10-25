@@ -4,7 +4,7 @@
 
 TEST(Scheduler, FunctionalTest)
 {
-    TaskScheduler scheduler;
+    sys_monitor::TaskScheduler scheduler;
 
     scheduler.addTask([]() { std::cout << "Task 1 running every 1 second" << std::endl; }, std::chrono::seconds(1));
     scheduler.addTask([]() { std::cout << "Task 3 running every 3 seconds" << std::endl; }, std::chrono::seconds(3));

@@ -7,6 +7,8 @@
 #include <vector>
 #include <atomic>
 
+namespace sys_monitor {
+
 class TaskScheduler {
 public:
     TaskScheduler() : running(true) {}
@@ -44,3 +46,5 @@ private:
     std::vector<std::thread> threads;
     std::atomic<bool> running;
 };
+
+} // namespace sys_monitor
