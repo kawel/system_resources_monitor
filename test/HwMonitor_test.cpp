@@ -341,3 +341,34 @@ TEST(HwMonitorIpLinkStatistics, OStream)
     ipLinkStatistics3.update();
     std::cout << ipLinkStatistics3;
 }
+
+class TestHwMonitor : public HwMonitor
+{
+public:
+    using HwMonitor::listNetworkInterfaces; // Expose the protected method as public
+    using HwMonitor::getTasks; // Expose the protected method as public
+};
+
+TEST(HwMonitorHwMonitor, ListNetworkInterfaces)
+{
+    TestHwMonitor hwMonitor;
+    std::vector<std::string> interfaces = hwMonitor.listNetworkInterfaces();
+    for (const auto &interface : interfaces) {
+        std::cout << interface << std::endl;
+    }
+}
+
+TEST(HwMonitorHwMonitor, FunctionalTest)
+{
+    TestHwMonitor hwMonitor;
+    hwMonitor.updateAll();
+
+    std::string serialized_data;
+
+    for (const auto& task : hwMonitor.getTasks()) {
+        serialized_data = task->serialize();
+        EXPECT_NE(serialized_data, "");
+        std::cout << serialized_data << std::endl;
+        serialized_data.clear();
+    }
+}

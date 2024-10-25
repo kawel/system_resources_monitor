@@ -13,6 +13,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <dirent.h> // Include POSIX directory handling
+
 
 int UpTimeInfo::update()
 {
@@ -34,6 +36,12 @@ int UpTimeInfo::update()
     _uptime = uptime;
 
     return 0;
+}
+
+std::string UpTimeInfo::serialize() const {
+    std::ostringstream oss;
+    oss << *this;
+    return oss.str();
 }
 
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
@@ -66,6 +74,12 @@ int LoadAvg::update()
 std::tuple<double, double, double> LoadAvg::get() const
 {
     return std::make_tuple(_load_1, _load_5, _load_15);
+}
+
+std::string LoadAvg::serialize() const {
+    std::ostringstream oss;
+    oss << *this;
+    return oss.str();
 }
 
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
@@ -218,4 +232,48 @@ std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
     os << "TX: " << obj._tx_bytes << " bytes, " << obj._tx_packets << " packets, " << obj._tx_errors << " errors, " << obj._tx_dropped << " dropped" << std::endl;
 
     return os;
+}
+
+HwMonitor::HwMonitor() {
+    _tasks.push_back(std::make_shared<PeriodicTask<UpTimeInfo>>(60, UpTimeInfo()));
+    _tasks.push_back(std::make_shared<PeriodicTask<LoadAvg>>(60, LoadAvg()));
+    // _tasks.push_back(std::make_shared<PeriodicTask<VersionInfo>>(3600, VersionInfo()));
+    // _tasks.push_back(std::make_shared<PeriodicTask<MemInfo>>(60, MemInfo()));
+    // _tasks.push_back(std::make_shared<PeriodicTask<IpLinkStatistics>>(60, IpLinkStatistics()));
+}
+
+void HwMonitor::updateAll() {
+    for (const auto& task : _tasks) {
+        task->update();
+    }
+}
+
+std::vector<std::string> HwMonitor::listNetworkInterfaces()
+{
+    //function listing folders in /sys/class/net
+    std::vector<std::string> interfaces;
+    std::string path = "/sys/class/net";
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(path.c_str())) != NULL)
+    {
+        while ((ent = readdir(dir)) != NULL)
+        {
+            if (ent->d_type == DT_LNK)
+            {
+                std::string name = ent->d_name;
+                if (name != "." && name != "..")
+                {
+                    interfaces.push_back(name);
+                }
+            }
+        }
+        closedir(dir);
+    }
+    else
+    {
+        Logger::LogError("Failed to open " + path);
+    }
+
+    return interfaces;
 }

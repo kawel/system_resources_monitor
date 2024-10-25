@@ -11,11 +11,15 @@
 
 #pragma once
 
+#include "IHwMonitor.h"
+
 #include <string>
 #include <iostream>
 #include <tuple>
+#include <vector>
+#include <memory>
 
-class UpTimeInfo
+class UpTimeInfo : public IHwMonitorTask
 {
 private:
     double _uptime;
@@ -24,17 +28,18 @@ protected:
     std::string _filePath;
 
 public:
-    UpTimeInfo() : _uptime{0.0}, _filePath{"/proc/uptime"} {}
+    UpTimeInfo() : _uptime{0.0}, _filePath{"/proc/uptime"} {};
+    ~UpTimeInfo() = default;
 
-    int update();
+    int update() override;
     double get() const { return _uptime; }
-    std::string serialize() const;
+    std::string serialize() const override;
 
     // Friend declaration for the output stream operator
     friend std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj);
 };
 
-class LoadAvg
+class LoadAvg : public IHwMonitorTask
 {
 private:
     double _load_1 = 0;
@@ -46,9 +51,10 @@ protected:
 
 public:
     LoadAvg() : _filePath{"/proc/loadavg"} {};
-    int update();
+    ~LoadAvg() override = default;
+    int update() override;
     std::tuple<double, double, double> get() const;
-    std::string serialize() const;
+    std::string serialize() const override;
 
     friend std::ostream &operator<<(std::ostream &os, const LoadAvg &obj);
 };
@@ -134,3 +140,47 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj);
 };
 
+
+template <typename T>
+class PeriodicTask : public IHwMonitorTask
+{
+public:
+    PeriodicTask(int period, T data) : _period(period), _data(data) {}
+
+    int update() override {
+       return _data.update();
+    }
+
+    std::string serialize() const override {
+        return _data.serialize();
+    }
+
+    int getPeriod() const { return _period; }
+    void setPeriod(int period) { _period = period; }
+
+    T& getData() { return _data; }
+    const T& getData() const { return _data; }
+
+private:
+    int _period; // Period in seconds
+    T _data;     // Data object
+};
+
+class HwMonitor {
+private:
+    std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
+    std::vector<std::string> _networkInterfaces;
+    // std::vector<PeriodicTask> _tasks;
+public:
+    HwMonitor();
+    void updateAll();
+
+    void update();
+    std::string serialize() const;
+
+    friend std::ostream &operator<<(std::ostream &os, const HwMonitor &obj);
+
+protected:
+    std::vector<std::string> listNetworkInterfaces();
+    std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const { return _tasks; }
+};

@@ -13,7 +13,7 @@ Input data for testing the HwMonitor class
     /proc/cpuinfo
     /proc/iomem
     /proc/loadavg
-    /proc/stats
+    /proc/stat
     /proc/uptime
     /proc/version
     /sys/class/thermal/thermal_zone0 $ cat temp  //42774
