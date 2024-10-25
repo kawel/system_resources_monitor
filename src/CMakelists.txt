@@ -6,6 +6,7 @@ set(SOURCES
     logger.cpp
     main.cpp
     MqttClient.cpp
+    Scheduler.cpp
     SysMonitor.cpp
 )
 
