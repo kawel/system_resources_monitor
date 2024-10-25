@@ -1,8 +1,8 @@
 #include "HwMonitor.h"
-#include <gtest/gtest.h>
 #include <fstream>
 #include <string>
 #include <tuple>
+#include <gtest/gtest.h>
 
 // Helper function to mock /proc/uptime content
 void mockUpFile(const std::string &filePath, const std::string &content)

@@ -39,6 +39,7 @@ protected:
 public:
     UpTimeInfo() : _uptime{0.0}, _filePath{"/proc/uptime"} {};
     ~UpTimeInfo() = default;
+    std::string getTaskName() const override { return "UpTimeInfo"; }
 
     int update() override;
     double get() const { return _uptime; }
@@ -60,6 +61,8 @@ protected:
 public:
     LoadAvg() : _filePath{"/proc/loadavg"} {};
     ~LoadAvg() override = default;
+    std::string getTaskName() const override { return "LoadAvg"; }
+
     int update() override;
     std::tuple<double, double, double> get() const;
     std::string serialize() const override { return ::serialize(*this); };
@@ -77,6 +80,9 @@ protected:
 
 public:
     VersionInfo() : _version(""), _filePath{"/proc/version"} {};
+    ~VersionInfo() override = default;
+    std::string getTaskName() const override { return "VersionInfo"; }
+
     int update() override;
     std::string get() const { return _version; }
     std::string serialize() const override { return ::serialize(*this); };
@@ -101,6 +107,9 @@ protected:
 
 public:
     MemInfo() : _total{0.0}, _free{0.0}, _available{0.0}, _buffers{0.0}, _cached{0.0}, _swap_total{0.0}, _swap_free{0.0}, _swap_cached{0.0}, _filePath{"/proc/meminfo"} {};
+    ~MemInfo() override = default;
+    std::string getTaskName() const override { return "MemInfo"; }
+
     int update() override;
     std::tuple<double, double, double, double, double, double, double, double, double> get() const;
     double getMemTotal() const { return _total; };
@@ -131,6 +140,8 @@ protected:
 public:
     IpLinkStatistics() : _interfaceName{"eth0"}, _filePath{"/sys/class/net/"} {};
     IpLinkStatistics(const std::string &interface) : _interfaceName{interface}, _filePath{"/sys/class/net/"} {};
+    std::string getTaskName() const override { return "IpLinkStatistics/" + _interfaceName; }
+
     int update() override;
     void setIpLinkInterface(const std::string &interface) { _interfaceName = interface; };
     std::tuple<int, int, int, int, int, int, int, int> get() const;
@@ -153,6 +164,8 @@ class PeriodicTask : public IHwMonitorTask
 {
 public:
     PeriodicTask(int period, T data) : _period(period), _data(data) {}
+    ~PeriodicTask() override = default;
+    std::string getTaskName() const override { return "PeriodicTask/" + _data.getTaskName(); }
 
     int update() override
     {
@@ -182,6 +195,7 @@ private:
     std::vector<std::string> _networkInterfaces;
 public:
     HwMonitor();
+    ~HwMonitor() override = default;
     void updateAll() override; 
     std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const override { return _tasks; }
 

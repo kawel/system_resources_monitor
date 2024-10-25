@@ -28,6 +28,7 @@ public:
         update();
         return serialize();
     };
+    virtual std::string getTaskName() const = 0;
 };
 
 class IHwMonitor
