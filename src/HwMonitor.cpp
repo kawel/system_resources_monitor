@@ -38,12 +38,6 @@ int UpTimeInfo::update()
     return 0;
 }
 
-std::string UpTimeInfo::serialize() const {
-    std::ostringstream oss;
-    oss << *this;
-    return oss.str();
-}
-
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
 {
     os << std::fixed << std::setprecision(2) << obj._uptime << "[s]";
@@ -74,12 +68,6 @@ int LoadAvg::update()
 std::tuple<double, double, double> LoadAvg::get() const
 {
     return std::make_tuple(_load_1, _load_5, _load_15);
-}
-
-std::string LoadAvg::serialize() const {
-    std::ostringstream oss;
-    oss << *this;
-    return oss.str();
 }
 
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
@@ -236,10 +224,13 @@ std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
 
 HwMonitor::HwMonitor() {
     _tasks.push_back(std::make_shared<PeriodicTask<UpTimeInfo>>(60, UpTimeInfo()));
-    _tasks.push_back(std::make_shared<PeriodicTask<LoadAvg>>(60, LoadAvg()));
-    // _tasks.push_back(std::make_shared<PeriodicTask<VersionInfo>>(3600, VersionInfo()));
-    // _tasks.push_back(std::make_shared<PeriodicTask<MemInfo>>(60, MemInfo()));
-    // _tasks.push_back(std::make_shared<PeriodicTask<IpLinkStatistics>>(60, IpLinkStatistics()));
+    _tasks.push_back(std::make_shared<PeriodicTask<LoadAvg>>(10, LoadAvg()));
+    _tasks.push_back(std::make_shared<PeriodicTask<VersionInfo>>(300, VersionInfo()));
+    _tasks.push_back(std::make_shared<PeriodicTask<MemInfo>>(5, MemInfo()));
+    _networkInterfaces = listNetworkInterfaces();
+    for (const auto & interface : _networkInterfaces) {
+        _tasks.push_back(std::make_shared<PeriodicTask<IpLinkStatistics>>(3, IpLinkStatistics(interface)));
+    }
 }
 
 void HwMonitor::updateAll() {
