@@ -175,18 +175,16 @@ private:
     T _data;     // Data object
 };
 
-class HwMonitor
+class HwMonitor : public IHwMonitor
 {
 private:
     std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
     std::vector<std::string> _networkInterfaces;
 public:
     HwMonitor();
-    void updateAll();
-
-    friend std::ostream &operator<<(std::ostream &os, const HwMonitor &obj);
+    void updateAll() override; 
+    std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const override { return _tasks; }
 
 protected:
     std::vector<std::string> listNetworkInterfaces();
-    std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const { return _tasks; }
 };
