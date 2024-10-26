@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <dirent.h> // Include POSIX directory handling
 
-
 int UpTimeInfo::update()
 {
     std::ifstream uptimeFile(_filePath);
@@ -129,7 +128,7 @@ int MemInfo::update()
         _total = _free = _available = -1;
         _buffers = _cached = -1;
         _swap_total = _swap_free = _swap_cached = -1;
-    
+
         memInfoFile.close();
         return -1;
     }
@@ -153,8 +152,7 @@ int MemInfo::update()
             iss >> _available;
             break;
         }
-    }
-    while (std::getline(memInfoFile, line));
+    } while (std::getline(memInfoFile, line));
 
     memInfoFile.close();
 
@@ -222,26 +220,40 @@ std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
     return os;
 }
 
-HwMonitor::HwMonitor() {
-    _tasks.push_back(std::make_shared<PeriodicTask<UpTimeInfo>>(60, UpTimeInfo()));
-    _tasks.push_back(std::make_shared<PeriodicTask<LoadAvg>>(10, LoadAvg()));
-    _tasks.push_back(std::make_shared<PeriodicTask<VersionInfo>>(300, VersionInfo()));
-    _tasks.push_back(std::make_shared<PeriodicTask<MemInfo>>(5, MemInfo()));
+HwMonitor::HwMonitor() : _upTimeInfo{}, _loadAvg{},
+                         _versionInfo{}, _memInfo{},
+                         _networkInterfaces{}, _tasks{}
+{
+    _tasks.push_back(std::make_shared<UpTimeInfo>(_upTimeInfo));
+    _tasks.push_back(std::make_shared<LoadAvg>(_loadAvg));
+    _tasks.push_back(std::make_shared<VersionInfo>(_versionInfo));
+    _tasks.push_back(std::make_shared<MemInfo>(_memInfo));
+    
     _networkInterfaces = listNetworkInterfaces();
-    for (const auto & interface : _networkInterfaces) {
-        _tasks.push_back(std::make_shared<PeriodicTask<IpLinkStatistics>>(3, IpLinkStatistics(interface)));
+    for (const auto &interface : _networkInterfaces)
+    {   
+        if (interface == "lo")
+        {
+            continue;
+        }
+
+        _ipLinkStatistics.push_back(std::make_shared<IpLinkStatistics>(IpLinkStatistics(interface)));
     }
+    _tasks.insert(_tasks.end(), _ipLinkStatistics.begin(), _ipLinkStatistics.end());
+
 }
 
-void HwMonitor::updateAll() {
-    for (const auto& task : _tasks) {
+void HwMonitor::updateAll()
+{
+    for (const auto &task : _tasks)
+    {
         task->update();
     }
 }
 
 std::vector<std::string> HwMonitor::listNetworkInterfaces()
 {
-    //function listing folders in /sys/class/net
+    // function listing folders in /sys/class/net
     std::vector<std::string> interfaces;
     std::string path = "/sys/class/net";
     DIR *dir;

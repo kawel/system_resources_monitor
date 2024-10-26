@@ -191,8 +191,15 @@ private:
 class HwMonitor : public IHwMonitor
 {
 private:
-    std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
+    
+    UpTimeInfo _upTimeInfo;
+    LoadAvg _loadAvg;
+    VersionInfo _versionInfo;
+    MemInfo _memInfo;
+    std::vector<std::shared_ptr<IHwMonitorTask>> _ipLinkStatistics;
+    
     std::vector<std::string> _networkInterfaces;
+    std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
 public:
     HwMonitor();
     ~HwMonitor() override = default;

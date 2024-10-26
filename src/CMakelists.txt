@@ -3,6 +3,7 @@ set(INCLUDES ../inc)
 
 # Set the source files
 set(SOURCES 
+    HwMonitor.cpp
     logger.cpp
     main.cpp
     MqttClient.cpp

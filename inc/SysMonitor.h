@@ -17,6 +17,6 @@ public:
 private:
     MqttCfg _cfg;
     sys_monitor::TaskScheduler _taskScheduler;
-    // HwMonitor _hwMonitor;
+    HwMonitor _hwMonitor;
     std::unique_ptr<IMqttClient> _client;
 };
