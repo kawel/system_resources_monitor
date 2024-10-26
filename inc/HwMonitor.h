@@ -159,35 +159,6 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj);
 };
 
-template <typename T>
-class PeriodicTask : public IHwMonitorTask
-{
-public:
-    PeriodicTask(int period, T task) : _period(period), _task(task) {}
-    ~PeriodicTask() override = default;
-    std::string getTaskName() const override { return "PeriodicTask/" + _task.getTaskName(); }
-
-    int update() override
-    {
-        return _task.update();
-    }
-
-    std::string serialize() const override
-    {
-        return _task.serialize();
-    }
-
-    int getPeriod() const { return _period; }
-    void setPeriod(int period) { _period = period; }
-
-    T &getTask() { return _task; }
-    const T &getTask() const { return _task; }
-
-private:
-    int _period; // Period in seconds
-    T _task;     // Data object
-};
-
 class HwMonitor : public IHwMonitor
 {
 private:
