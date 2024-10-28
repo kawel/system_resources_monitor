@@ -2,7 +2,9 @@
 add_subdirectory(../ext/googletest googletest)
 
 # Set the include directories
-set(INCLUDES ../inc)
+set(INCLUDES ../inc
+
+)
 
 # Set the sources
 set(TEST_SOURCES
@@ -28,7 +30,8 @@ target_include_directories(runTests PRIVATE ${INCLUDES})
 target_compile_definitions(runTests PRIVATE USE_STDOUT)
 
 # Link Google Test and the main project
-target_link_libraries(runTests gtest gtest_main)
+target_link_libraries(runTests gtest gtest_main
+nlohmann_json::nlohmann_json)
 
 # Add tests
 # Discover and register tests

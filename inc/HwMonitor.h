@@ -164,7 +164,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj);
 };
 
-class HwMonitor : public IHwMonitor
+class HwMonitor
 {
 private:
     
@@ -175,12 +175,9 @@ private:
     std::vector<std::shared_ptr<IHwMonitorTask>> _ipLinkStatistics;
     
     std::vector<std::string> _networkInterfaces;
-    std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
 public:
     HwMonitor();
-    ~HwMonitor() override = default;
-    void updateAll() override; 
-    std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const override { return _tasks; }
+    ~HwMonitor() = default;
     
     std::vector<std::string> getNetworkInterfaces() const { return _networkInterfaces; }
 

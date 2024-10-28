@@ -31,12 +31,3 @@ public:
         return dumpToJSON();
     };
 };
-
-class IHwMonitor
-{
-public:
-    virtual void updateAll() = 0;
-    virtual ~IHwMonitor() = default;
-    virtual std::vector<std::shared_ptr<IHwMonitorTask>>  getTasks() const = 0;
-
-};
