@@ -19,4 +19,9 @@ private:
     sys_monitor::TaskScheduler _taskScheduler;
     HwMonitor _hwMonitor;
     std::unique_ptr<IMqttClient> _client;
+
+    std::string makeMqttTopic(const std::string &taskName) const
+    {
+        return _cfg._mqttRootTopic + "/" + taskName;
+    }
 };

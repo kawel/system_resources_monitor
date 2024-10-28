@@ -15,6 +15,8 @@
 #include <iomanip>
 #include <dirent.h> // Include POSIX directory handling
 
+// #include <nlohmann/json.hpp>
+
 int UpTimeInfo::update()
 {
     std::ifstream uptimeFile(_filePath);
@@ -35,6 +37,15 @@ int UpTimeInfo::update()
     _uptime = uptime;
 
     return 0;
+}
+
+std::string UpTimeInfo::dumpToJSON() const
+{
+    // nlohmann::json j;
+    // j["uptime"] = _uptime;
+
+    // return j.dump();
+    return "";
 }
 
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
@@ -69,6 +80,17 @@ std::tuple<double, double, double> LoadAvg::get() const
     return std::make_tuple(_load_1, _load_5, _load_15);
 }
 
+std::string LoadAvg::dumpToJSON() const
+{
+    // nlohmann::json j;
+    // j["load_1"] = _load_1;
+    // j["load_5"] = _load_5;
+    // j["load_15"] = _load_15;
+
+    // return j.dump();
+    return "";
+}
+
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
 {
     os << std::fixed << std::setprecision(2) << obj._load_1 << "[%], " << obj._load_5 << "[%], " << obj._load_15 << "[%]";
@@ -100,6 +122,15 @@ int VersionInfo::update()
     _version = line;
 
     return 0;
+}
+
+std::string VersionInfo::dumpToJSON() const
+{
+    // nlohmann::json j;
+    // j["version"] = _version;
+
+    // return j.dump();
+    return "";
 }
 
 std::ostream &operator<<(std::ostream &os, const VersionInfo &obj)
@@ -159,6 +190,22 @@ int MemInfo::update()
     return 0;
 }
 
+std::string MemInfo::dumpToJSON() const
+{
+    // nlohmann::json j;
+    // j["MemTotal"] = _total;
+    // j["MemFree"] = _free;
+    // j["MemAvailable"] = _available;
+    // j["Buffers"] = _buffers;
+    // j["Cached"] = _cached;
+    // j["SwapTotal"] = _swap_total;
+    // j["SwapFree"] = _swap_free;
+    // j["SwapCached"] = _swap_cached;
+
+    // return j.dump();
+    return "";
+}
+
 std::ostream &operator<<(std::ostream &os, const MemInfo &obj)
 {
     os << std::fixed << std::setprecision(2) << "MemTotal: " << obj._total << " kB, MemFree: " << obj._free << " kB, MemAvailable: " << obj._available << " kB";
@@ -210,6 +257,22 @@ int IpLinkStatistics::update()
     _tx_dropped = _readIntValueFromFile("tx_dropped");
 
     return 0;
+}
+
+std::string IpLinkStatistics::dumpToJSON() const
+{
+    // nlohmann::json j;
+    // j["rx_bytes"] = _rx_bytes;
+    // j["rx_packets"] = _rx_packets;
+    // j["rx_errors"] = _rx_errors;
+    // j["rx_dropped"] = _rx_dropped;
+    // j["tx_bytes"] = _tx_bytes;
+    // j["tx_packets"] = _tx_packets;
+    // j["tx_errors"] = _tx_errors;
+    // j["tx_dropped"] = _tx_dropped;
+
+    // return j.dump();
+    return "";
 }
 
 std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)

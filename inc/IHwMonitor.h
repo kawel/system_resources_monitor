@@ -22,13 +22,14 @@ class IHwMonitorTask
 public:
     virtual int update() = 0;
     virtual std::string serialize() const = 0;
+    virtual std::string dumpToJSON() const = 0;
+    virtual std::string getTaskName() const = 0;
     virtual ~IHwMonitorTask() = default;
     std::string run()
     {
         update();
-        return serialize();
+        return dumpToJSON();
     };
-    virtual std::string getTaskName() const = 0;
 };
 
 class IHwMonitor
