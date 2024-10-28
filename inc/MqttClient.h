@@ -14,9 +14,8 @@
 
 #include "IMqttClient.h"
 
-#include "mosquitto.h"
-
 #include "logger.h"
+#include "mosquitto.h"
 
 class MqttClient : public IMqttClient
 {
@@ -35,6 +34,8 @@ private:
     bool connect();
     void disconnect();
     void loop();
+    // add queue for messages
+
 
     static void onConnect(struct mosquitto *mosq, void *obj, int result)
     {
