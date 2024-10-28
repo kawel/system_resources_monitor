@@ -33,11 +33,6 @@ MqttClient::MqttClient(const std::string &clientId, const std::string &host, int
     mosquitto_disconnect_callback_set(_mosq, onDisconnect);
 }
 
-MqttClient::MqttClient(const MqttCfg &cfg)
-    : MqttClient(cfg._clientName, cfg._host, cfg._port, cfg._keepAlive)
-{
-}
-
 MqttClient::~MqttClient()
 {
     mosquitto_disconnect(_mosq);
@@ -51,8 +46,8 @@ bool MqttClient::Initialize()
 {
     if (!connect())
     {
+        Logger::LogError("Failed to connect to broker");
         throw std::runtime_error("Failed to connect to broker");
-        return false;
     }
 
     loop();
@@ -69,9 +64,8 @@ bool MqttClient::connect()
     int res = mosquitto_connect(_mosq, _host.c_str(), _port, _keepAlive);
     if (res != MOSQ_ERR_SUCCESS)
     {
-        throw std::runtime_error("Failed to connect to broker");
         Logger::LogError("Failed to connect to broker:", mosquitto_strerror(res));
-        return false;
+        throw std::runtime_error("Failed to connect to broker");
     }
     Logger::LogInfo("Connecting to broker:", _host, ":", _port);
     return true;
@@ -80,8 +74,8 @@ bool MqttClient::connect()
 void MqttClient::disconnect()
 {
     mosquitto_disconnect(_mosq);
-    // 1s delau to allow the network loop to run
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // 2s delay to allow the network loop to run
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     mosquitto_loop_stop(_mosq, true);
 }
 

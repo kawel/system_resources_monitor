@@ -41,8 +41,7 @@ struct MqttCfg
 class IMqttClient
 {
 public:
-    IMqttClient() {}
-    virtual ~IMqttClient() {}
+    virtual ~IMqttClient() = default;
     virtual bool Initialize() = 0;
     virtual void Publish(const std::string &topic, const std::string &message) = 0;
     virtual void Subscribe(const std::string &topic) = 0;

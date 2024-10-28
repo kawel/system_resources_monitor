@@ -6,6 +6,11 @@
 #include <functional>
 #include <vector>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <algorithm>
+
+#include "logger.h"
 
 namespace sys_monitor {
 
@@ -20,20 +25,28 @@ public:
     void addTask(std::function<void()> task, std::chrono::milliseconds interval) {
         tasks.emplace_back([this, task, interval]() {
             while (running) {
-                std::this_thread::sleep_for(interval);
-                if (running) task();
+                std::unique_lock<std::mutex> lock(mutex);
+                if (cv.wait_for(lock, interval, [this]() { return !running; })) {
+                    break;
+                }
+                task();
             }
         });
     }
 
     void start() {
-        for (auto& task : tasks) {
+        std::for_each(tasks.begin(), tasks.end(), [this](const std::function<void()>& task) {
             threads.emplace_back(std::thread(task));
-        }
+        });
     }
 
     void stop() {
-        running = false;
+        Logger::LogDebug("Stopping task scheduler");
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            running = false;
+        }
+        cv.notify_all();
         for (auto& thread : threads) {
             if (thread.joinable()) {
                 thread.join();
@@ -45,6 +58,8 @@ private:
     std::vector<std::function<void()>> tasks;
     std::vector<std::thread> threads;
     std::atomic<bool> running;
+    std::condition_variable cv;
+    std::mutex mutex;
 };
 
 } // namespace sys_monitor

@@ -307,7 +307,7 @@ TEST(HwMonitorIpLinkStatistics, UpdateSuccess)
     EXPECT_EQ(ipLinkStatistics.getTxBytes(), -1);
 }
 
-TEST(HwMonitorIpLinkStatistics, FunstionalTest)
+TEST(HwMonitorIpLinkStatistics, FunctionalTest)
 {
     IpLinkStatistics ipLinkStatistics;
     EXPECT_EQ(ipLinkStatistics.update(), 0);
