@@ -6,50 +6,30 @@
 #include "logger.h"
 #include "SysMonitor.h"
 
+
+void SysMonitor::scheduleTask(IHwMonitorTask &task, std::chrono::seconds interval) {
+    _taskScheduler.addTask([&task, this]() {
+        task.update();
+        _client->Publish(_topic + task.getTaskName(), task.dumpToJSON());
+    }, interval);
+}
+
 SysMonitor::SysMonitor(const MqttCfg &cfg)
     : _cfg{cfg},
       _taskScheduler{},
       _hwMonitor{},
       _client{nullptr},
-      _topic{"sys_mon/data/"},
-      _tasks{}
+      _topic{"sys_mon/data/"}
 {
+    // Schedule tasks using the template function
+    scheduleTask(_hwMonitor.getUpTimeInfo(), std::chrono::seconds(1));
+    scheduleTask(_hwMonitor.getLoadAvg(), std::chrono::seconds(10));
+    scheduleTask(_hwMonitor.getVersionInfo(), std::chrono::seconds(60));
+    scheduleTask(_hwMonitor.getMemInfo(), std::chrono::seconds(2));
 
-    _taskScheduler.addTask([this]()
-                           {
-        this->_hwMonitor.getUpTimeInfo().update();
-        this->_client->Publish(_topic + this->_hwMonitor.getUpTimeInfo().getTaskName(), 
-        this->_hwMonitor.getUpTimeInfo().dumpToJSON()); },
-                           std::chrono::seconds(10));
-
-    _taskScheduler.addTask([this]()
-                           {
-        this->_hwMonitor.getLoadAvg().update();
-        this->_client->Publish(_topic + this->_hwMonitor.getLoadAvg().getTaskName(),
-        this->_hwMonitor.getLoadAvg().dumpToJSON()); },
-                           std::chrono::seconds(2));
-
-    _taskScheduler.addTask([this]()
-                           {
-        this->_hwMonitor.getMemInfo().update();
-        this->_client->Publish(_topic + this->_hwMonitor.getMemInfo().getTaskName(),
-        this->_hwMonitor.getMemInfo().dumpToJSON()); },
-                           std::chrono::seconds(2));
-
-    _taskScheduler.addTask([this]()
-                           {
-        this->_hwMonitor.getVersionInfo().update();
-        this->_client->Publish(_topic + this->_hwMonitor.getVersionInfo().getTaskName(),
-        this->_hwMonitor.getVersionInfo().dumpToJSON()); },
-                           std::chrono::seconds(15));
-
-    for (const auto &ipLink : _hwMonitor.getIpLinkStatistics())
+    for (const auto &ipLinkStatistics : _hwMonitor.getIpLinkStatistics())
     {
-        _taskScheduler.addTask([this, ipLink]()
-                               {
-            ipLink->update();
-            this->_client->Publish(_topic + ipLink->getTaskName(), ipLink->dumpToJSON()); },
-                               std::chrono::seconds(5));
+        scheduleTask(*ipLinkStatistics, std::chrono::seconds(5));
     }
 }
 
