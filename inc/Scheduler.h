@@ -8,6 +8,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include <algorithm>
 
 #include "logger.h"
 
@@ -34,9 +35,9 @@ public:
     }
 
     void start() {
-        for (auto& task : tasks) {
+        std::for_each(tasks.begin(), tasks.end(), [this](const std::function<void()>& task) {
             threads.emplace_back(std::thread(task));
-        }
+        });
     }
 
     void stop() {
