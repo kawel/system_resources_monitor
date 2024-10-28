@@ -1,14 +1,32 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <memory>
 
 #include "logger.h"
 #include "SysMonitor.h"
 
 
 SysMonitor::SysMonitor(const MqttCfg &cfg)
-    : _cfg{cfg}
+    : _cfg{cfg},
+    _taskScheduler{}, 
+    _hwMonitor{}, 
+    _client{nullptr},
+    _topic{"sys_mon/data/"},
+    _tasks{}
 {
+    // for (const auto &task : _hwMonitor.getTasks())
+    // {
+    //     _tasks.push_back(std::make_shared<SysMonitorTask>(task, std::chrono::seconds(5), _client));
+    // }
+    int n =1;
+    for (const auto &task : _hwMonitor.getTasks())
+    {
+        _taskScheduler.addTask([this, task]() {
+            task->update();
+            _client->Publish(_topic + task->getTaskName(), task->dumpToJSON());
+        }, std::chrono::seconds(n++));
+    }
 }
 
 SysMonitor::~SysMonitor()
@@ -32,6 +50,8 @@ int SysMonitor::Initialize()
         std::cerr << "Error: " << ex.what() << std::endl;
         return 1;
     }
+
+
     return 0;
 }
 

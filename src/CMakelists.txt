@@ -3,14 +3,20 @@ set(INCLUDES ../inc)
 
 # Set the source files
 set(SOURCES 
+    HwMonitor.cpp
     logger.cpp
     main.cpp
     MqttClient.cpp
+    Scheduler.cpp
     SysMonitor.cpp
 )
 
 # Add the executable target
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Add the external json directory
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(${CMAKE_SOURCE_DIR}/ext/json ${CMAKE_BINARY_DIR}/ext/json)
 
 # Include the specified include directories
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
@@ -26,8 +32,11 @@ pkg_check_modules(MOSQUITTO REQUIRED libmosquitto)
 # Include the Mosquitto headers
 include_directories(${MOSQUITTO_INCLUDE_DIRS})
 
-# Link the Mosquitto library to the executable
-target_link_libraries(${PROJECT_NAME} ${MOSQUITTO_LIBRARIES})
+# Link libraries to the executable
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE nlohmann_json::nlohmann_json
+    ${MOSQUITTO_LIBRARIES}
+    )
 
 # Add compile definitions for Release build
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

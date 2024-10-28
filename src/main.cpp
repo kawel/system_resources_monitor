@@ -8,7 +8,7 @@
 
 #include "logger.h"
 
-const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60);
+const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
 static std::unique_ptr<SysMonitor> g_system_monitor;
 
 static void signalHandler(int signum);
@@ -29,6 +29,12 @@ int main(int argc, char *argv[])
         Logger::LogError("Failed to initialize system monitor");
         return 1;
     }
+
+    g_system_monitor->Start();
+    std::this_thread::sleep_for(std::chrono::seconds(10)); // Run for 20 seconds
+    g_system_monitor->Stop();
+
+    g_system_monitor->Deinit();
 
     Logger::Deinit();
 

@@ -7,6 +7,8 @@ set(INCLUDES ../inc)
 # Set the sources
 set(TEST_SOURCES
     HwMonitor_test.cpp
+    Scheduler_test.cpp
+    SysMonitor_test.cpp
     )
 
 set(SOURCES

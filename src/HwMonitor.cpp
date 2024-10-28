@@ -15,6 +15,11 @@
 #include <iomanip>
 #include <dirent.h> // Include POSIX directory handling
 
+#include "nlohmann/json.hpp"
+// #include "/mnt/e/projects/posejdon_system/apps/system_resorces_monitor/ext/json/single_include/nlohmann/json.hpp"
+
+// for convenience
+using json = nlohmann::json;
 
 int UpTimeInfo::update()
 {
@@ -36,6 +41,16 @@ int UpTimeInfo::update()
     _uptime = uptime;
 
     return 0;
+}
+
+std::string UpTimeInfo::dumpToJSON() const
+{
+    json j;
+    j["uptime"] = {
+        {"value", _uptime},
+        {"unit", "s"}
+    };
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
@@ -68,6 +83,18 @@ int LoadAvg::update()
 std::tuple<double, double, double> LoadAvg::get() const
 {
     return std::make_tuple(_load_1, _load_5, _load_15);
+}
+
+std::string LoadAvg::dumpToJSON() const
+{
+    json j;
+    j["load"] = {
+        {"1min", _load_1},
+        {"5min", _load_5},
+        {"15min", _load_15},
+        {"unit", "%"}
+    };
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
@@ -103,6 +130,13 @@ int VersionInfo::update()
     return 0;
 }
 
+std::string VersionInfo::dumpToJSON() const
+{
+    json j;
+    j["version"] = _version;
+    return j.dump();
+}
+
 std::ostream &operator<<(std::ostream &os, const VersionInfo &obj)
 {
     os << obj._version;
@@ -129,7 +163,7 @@ int MemInfo::update()
         _total = _free = _available = -1;
         _buffers = _cached = -1;
         _swap_total = _swap_free = _swap_cached = -1;
-    
+
         memInfoFile.close();
         return -1;
     }
@@ -153,12 +187,29 @@ int MemInfo::update()
             iss >> _available;
             break;
         }
-    }
-    while (std::getline(memInfoFile, line));
+    } while (std::getline(memInfoFile, line));
 
     memInfoFile.close();
 
     return 0;
+}
+
+std::string MemInfo::dumpToJSON() const
+{
+    json j;
+    j["MemInfo"] = {
+        {"MemTotal", _total},
+        {"MemFree", _free},
+        {"MemAvailable", _available},
+        {"Buffers", _buffers},
+        {"Cached", _cached},
+        {"SwapTotal", _swap_total},
+        {"SwapFree", _swap_free},
+        {"SwapCached", _swap_cached},
+        {"unit", "kB"}
+    };
+
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const MemInfo &obj)
@@ -214,6 +265,23 @@ int IpLinkStatistics::update()
     return 0;
 }
 
+std::string IpLinkStatistics::dumpToJSON() const
+{
+    json j;
+    j[_interfaceName] ={
+        {"rx_bytes", _rx_bytes},
+        {"rx_packets", _rx_packets},
+        {"rx_errors", _rx_errors},
+        {"rx_dropped", _rx_dropped},
+        {"tx_bytes", _tx_bytes},
+        {"tx_packets", _tx_packets},
+        {"tx_errors", _tx_errors},
+        {"tx_dropped", _tx_dropped},
+        {"unit", "bytes"}
+    };
+    return j.dump();
+}
+
 std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
 {
     os << "RX: " << obj._rx_bytes << " bytes, " << obj._rx_packets << " packets, " << obj._rx_errors << " errors, " << obj._rx_dropped << " dropped" << std::endl;
@@ -222,26 +290,40 @@ std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
     return os;
 }
 
-HwMonitor::HwMonitor() {
-    _tasks.push_back(std::make_shared<PeriodicTask<UpTimeInfo>>(60, UpTimeInfo()));
-    _tasks.push_back(std::make_shared<PeriodicTask<LoadAvg>>(10, LoadAvg()));
-    _tasks.push_back(std::make_shared<PeriodicTask<VersionInfo>>(300, VersionInfo()));
-    _tasks.push_back(std::make_shared<PeriodicTask<MemInfo>>(5, MemInfo()));
+HwMonitor::HwMonitor() : _upTimeInfo{}, _loadAvg{},
+                         _versionInfo{}, _memInfo{},
+                         _networkInterfaces{}, _tasks{}
+{
+    _tasks.push_back(std::make_shared<UpTimeInfo>(_upTimeInfo));
+    _tasks.push_back(std::make_shared<LoadAvg>(_loadAvg));
+    _tasks.push_back(std::make_shared<VersionInfo>(_versionInfo));
+    _tasks.push_back(std::make_shared<MemInfo>(_memInfo));
+    
     _networkInterfaces = listNetworkInterfaces();
-    for (const auto & interface : _networkInterfaces) {
-        _tasks.push_back(std::make_shared<PeriodicTask<IpLinkStatistics>>(3, IpLinkStatistics(interface)));
+    for (const auto &interface : _networkInterfaces)
+    {   
+        if (interface == "lo")
+        {
+            continue;
+        }
+
+        _ipLinkStatistics.push_back(std::make_shared<IpLinkStatistics>(IpLinkStatistics(interface)));
     }
+    _tasks.insert(_tasks.end(), _ipLinkStatistics.begin(), _ipLinkStatistics.end());
+
 }
 
-void HwMonitor::updateAll() {
-    for (const auto& task : _tasks) {
+void HwMonitor::updateAll()
+{
+    for (const auto &task : _tasks)
+    {
         task->update();
     }
 }
 
 std::vector<std::string> HwMonitor::listNetworkInterfaces()
 {
-    //function listing folders in /sys/class/net
+    // function listing folders in /sys/class/net
     std::vector<std::string> interfaces;
     std::string path = "/sys/class/net";
     DIR *dir;
