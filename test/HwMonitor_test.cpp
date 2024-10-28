@@ -345,8 +345,28 @@ TEST(HwMonitorIpLinkStatistics, OStream)
 class TestHwMonitor : public HwMonitor
 {
 public:
+    std::vector<std::shared_ptr<IHwMonitorTask>> _tasks;
     using HwMonitor::listNetworkInterfaces; // Expose the protected method as public
-    using HwMonitor::getTasks; // Expose the protected method as public
+    std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() { return _tasks; }
+    TestHwMonitor() : _tasks{}
+    {
+        _tasks.push_back(std::make_shared<UpTimeInfo>(getUpTimeInfo()));
+        _tasks.push_back(std::make_shared<LoadAvg>(getLoadAvg()));
+        _tasks.push_back(std::make_shared<VersionInfo>(getVersionInfo()));
+        _tasks.push_back(std::make_shared<MemInfo>(getMemInfo()));
+        for (const auto &ipLinkStatistics : getIpLinkStatistics())
+        {
+            _tasks.push_back(ipLinkStatistics);
+        }
+    }
+    void updateAll()
+    {
+        for (const auto &task : _tasks)
+        {
+            task->update();
+        }
+    }
+
 };
 
 TEST(HwMonitorHwMonitor, ListNetworkInterfaces)

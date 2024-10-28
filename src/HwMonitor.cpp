@@ -292,13 +292,8 @@ std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
 
 HwMonitor::HwMonitor() : _upTimeInfo{}, _loadAvg{},
                          _versionInfo{}, _memInfo{},
-                         _networkInterfaces{}, _tasks{}
+                         _networkInterfaces{}
 {
-    _tasks.push_back(std::make_shared<UpTimeInfo>(_upTimeInfo));
-    _tasks.push_back(std::make_shared<LoadAvg>(_loadAvg));
-    _tasks.push_back(std::make_shared<VersionInfo>(_versionInfo));
-    _tasks.push_back(std::make_shared<MemInfo>(_memInfo));
-    
     _networkInterfaces = listNetworkInterfaces();
     for (const auto &interface : _networkInterfaces)
     {   
@@ -309,16 +304,7 @@ HwMonitor::HwMonitor() : _upTimeInfo{}, _loadAvg{},
 
         _ipLinkStatistics.push_back(std::make_shared<IpLinkStatistics>(IpLinkStatistics(interface)));
     }
-    _tasks.insert(_tasks.end(), _ipLinkStatistics.begin(), _ipLinkStatistics.end());
 
-}
-
-void HwMonitor::updateAll()
-{
-    for (const auto &task : _tasks)
-    {
-        task->update();
-    }
 }
 
 std::vector<std::string> HwMonitor::listNetworkInterfaces()
