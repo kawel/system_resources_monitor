@@ -3,9 +3,9 @@
 #include <thread>
 #include <chrono>
 #include <memory>
+#include <execinfo.h> // For backtrace
 
 #include "SysMonitor.h"
-
 #include "logger.h"
 
 const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
@@ -31,20 +31,55 @@ int main(int argc, char *argv[])
     }
 
     g_system_monitor->Start();
-    std::this_thread::sleep_for(std::chrono::seconds(10)); // Run for 20 seconds
-    g_system_monitor->Stop();
 
-    g_system_monitor->Deinit();
-
-    Logger::Deinit();
+    // loop forever
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
     return 0;
 }
 
-// TODO: Implement signal handlers for SIGINT, SIGTERM, and SIGSEGV
 static void signalHandler(int signum)
 {
-    std::cerr << "Signal " << signum << " received" << std::endl;
-    Logger::Deinit();
-    exit(signum);
+    if (signum == SIGSEGV)
+    {
+        Logger::LogError("Segmentation fault (signal %d) received.", signum);
+
+        // Print backtrace
+        void *array[10];
+        size_t size = backtrace(array, 10);
+        char **messages = backtrace_symbols(array, size);
+        Logger::LogError("Backtrace:");
+        for (size_t i = 0; i < size; i++)
+        {
+            Logger::LogError("%s", messages[i]);
+        }
+        free(messages);
+
+        // Minimal cleanup
+        if (g_system_monitor)
+        {
+            g_system_monitor->Stop();
+            g_system_monitor->Deinit();
+        }
+
+        Logger::Deinit();
+        exit(signum);
+    }
+    else
+    {
+        Logger::LogNotice("Signal %d received", signum);
+        Logger::LogNotice("Stopping system monitor...");
+
+        if (g_system_monitor)
+        {
+            g_system_monitor->Stop();
+            g_system_monitor->Deinit();
+        }
+
+        Logger::Deinit();
+        exit(signum);
+    }
 }
