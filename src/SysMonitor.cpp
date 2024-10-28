@@ -11,8 +11,22 @@ SysMonitor::SysMonitor(const MqttCfg &cfg)
     : _cfg{cfg},
     _taskScheduler{}, 
     _hwMonitor{}, 
-    _client{nullptr}
+    _client{nullptr},
+    _topic{"sys_mon/data/"},
+    _tasks{}
 {
+    // for (const auto &task : _hwMonitor.getTasks())
+    // {
+    //     _tasks.push_back(std::make_shared<SysMonitorTask>(task, std::chrono::seconds(5), _client));
+    // }
+    int n =1;
+    for (const auto &task : _hwMonitor.getTasks())
+    {
+        _taskScheduler.addTask([this, task]() {
+            task->update();
+            _client->Publish(_topic + task->getTaskName(), task->dumpToJSON());
+        }, std::chrono::seconds(n++));
+    }
 }
 
 SysMonitor::~SysMonitor()
@@ -36,19 +50,6 @@ int SysMonitor::Initialize()
         std::cerr << "Error: " << ex.what() << std::endl;
         return 1;
     }
-
-    // std::shared_ptr<PeriodicTask> periodicTask;
-    // for (auto &task : _hwMonitor.getTasks())
-    // {
-    //     periodicTask = dynamic_cast<std::shared_ptr<PeriodicTask>>(task);
-    //     // periodicTask = dynamic_cast<PeriodicTask<UpTimeInfo> *>(task.get());
-    //     // Logger::Log(LOG_NOTICE, "Task: ", periodicTask->getTask().getTaskName());
-    //     // _taskScheduler.addTask([this, &task]() {
-    //     //     Logger::Log(LOG_NOTICE, "Task: ", task->serialize());
-    //     //     _client->Publish("test/topic", task->serialize());
-    //     // }, std::chrono::seconds{task->getPeriod()});
-    //     // _taskScheduler.addTask(task.getTask().run(), std::chrono::seconds{task->getPeriod()});
-    // }
 
 
     return 0;

@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    g_system_monitor->Start();
+    std::this_thread::sleep_for(std::chrono::seconds(10)); // Run for 20 seconds
+    g_system_monitor->Stop();
+
+    g_system_monitor->Deinit();
+
     Logger::Deinit();
 
     return 0;
