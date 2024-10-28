@@ -181,7 +181,14 @@ public:
     ~HwMonitor() override = default;
     void updateAll() override; 
     std::vector<std::shared_ptr<IHwMonitorTask>> getTasks() const override { return _tasks; }
+    
+    std::vector<std::string> getNetworkInterfaces() const { return _networkInterfaces; }
 
+    UpTimeInfo& getUpTimeInfo() { return _upTimeInfo; }
+    LoadAvg& getLoadAvg() { return _loadAvg; }
+    VersionInfo& getVersionInfo() { return _versionInfo; }
+    MemInfo& getMemInfo() { return _memInfo; }
+    std::vector<std::shared_ptr<IHwMonitorTask>> getIpLinkStatistics() { return _ipLinkStatistics; }
 protected:
     std::vector<std::string> listNetworkInterfaces();
 };
