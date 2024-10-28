@@ -21,7 +21,7 @@ class MqttClient : public IMqttClient
 {
 public:
     MqttClient() : _clientId{}, _host{}, _port{}, _keepAlive{}, _mosq{nullptr} {};
-    MqttClient(const MqttCfg &cfg);
+    MqttClient(const MqttCfg &cfg) : MqttClient(cfg._clientName, cfg._host, cfg._port, cfg._keepAlive) {};
     MqttClient(const std::string &clientId, const std::string &host, int port, int keepAlive = 60);
     ~MqttClient();
 
