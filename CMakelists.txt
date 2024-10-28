@@ -9,6 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 enable_testing()
 
+# Enable verbose makefile
+set(CMAKE_VERBOSE_MAKEFILE OFF)
+
 # Add subdirectories
 add_subdirectory(src)
 add_subdirectory(test)

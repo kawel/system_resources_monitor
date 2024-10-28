@@ -15,7 +15,11 @@
 #include <iomanip>
 #include <dirent.h> // Include POSIX directory handling
 
-// #include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
+// #include "/mnt/e/projects/posejdon_system/apps/system_resorces_monitor/ext/json/single_include/nlohmann/json.hpp"
+
+// for convenience
+using json = nlohmann::json;
 
 int UpTimeInfo::update()
 {
@@ -41,11 +45,12 @@ int UpTimeInfo::update()
 
 std::string UpTimeInfo::dumpToJSON() const
 {
-    // nlohmann::json j;
-    // j["uptime"] = _uptime;
-
-    // return j.dump();
-    return "";
+    json j;
+    j["uptime"] = {
+        {"value", _uptime},
+        {"unit", "s"}
+    };
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const UpTimeInfo &obj)
@@ -82,13 +87,14 @@ std::tuple<double, double, double> LoadAvg::get() const
 
 std::string LoadAvg::dumpToJSON() const
 {
-    // nlohmann::json j;
-    // j["load_1"] = _load_1;
-    // j["load_5"] = _load_5;
-    // j["load_15"] = _load_15;
-
-    // return j.dump();
-    return "";
+    json j;
+    j["load"] = {
+        {"1min", _load_1},
+        {"5min", _load_5},
+        {"15min", _load_15},
+        {"unit", "%"}
+    };
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const LoadAvg &obj)
@@ -126,11 +132,9 @@ int VersionInfo::update()
 
 std::string VersionInfo::dumpToJSON() const
 {
-    // nlohmann::json j;
-    // j["version"] = _version;
-
-    // return j.dump();
-    return "";
+    json j;
+    j["version"] = _version;
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const VersionInfo &obj)
@@ -192,18 +196,20 @@ int MemInfo::update()
 
 std::string MemInfo::dumpToJSON() const
 {
-    // nlohmann::json j;
-    // j["MemTotal"] = _total;
-    // j["MemFree"] = _free;
-    // j["MemAvailable"] = _available;
-    // j["Buffers"] = _buffers;
-    // j["Cached"] = _cached;
-    // j["SwapTotal"] = _swap_total;
-    // j["SwapFree"] = _swap_free;
-    // j["SwapCached"] = _swap_cached;
+    json j;
+    j["MemInfo"] = {
+        {"MemTotal", _total},
+        {"MemFree", _free},
+        {"MemAvailable", _available},
+        {"Buffers", _buffers},
+        {"Cached", _cached},
+        {"SwapTotal", _swap_total},
+        {"SwapFree", _swap_free},
+        {"SwapCached", _swap_cached},
+        {"unit", "kB"}
+    };
 
-    // return j.dump();
-    return "";
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const MemInfo &obj)
@@ -261,18 +267,19 @@ int IpLinkStatistics::update()
 
 std::string IpLinkStatistics::dumpToJSON() const
 {
-    // nlohmann::json j;
-    // j["rx_bytes"] = _rx_bytes;
-    // j["rx_packets"] = _rx_packets;
-    // j["rx_errors"] = _rx_errors;
-    // j["rx_dropped"] = _rx_dropped;
-    // j["tx_bytes"] = _tx_bytes;
-    // j["tx_packets"] = _tx_packets;
-    // j["tx_errors"] = _tx_errors;
-    // j["tx_dropped"] = _tx_dropped;
-
-    // return j.dump();
-    return "";
+    json j;
+    j[_interfaceName] ={
+        {"rx_bytes", _rx_bytes},
+        {"rx_packets", _rx_packets},
+        {"rx_errors", _rx_errors},
+        {"rx_dropped", _rx_dropped},
+        {"tx_bytes", _tx_bytes},
+        {"tx_packets", _tx_packets},
+        {"tx_errors", _tx_errors},
+        {"tx_dropped", _tx_dropped},
+        {"unit", "bytes"}
+    };
+    return j.dump();
 }
 
 std::ostream &operator<<(std::ostream &os, const IpLinkStatistics &obj)
