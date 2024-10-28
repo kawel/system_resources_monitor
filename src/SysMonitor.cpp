@@ -35,6 +35,7 @@ SysMonitor::SysMonitor(const MqttCfg &cfg)
 
 SysMonitor::~SysMonitor()
 {
+    Logger::LogDebug("SysMonitor destructor");
 }
 
 int SysMonitor::Initialize()
@@ -60,6 +61,7 @@ int SysMonitor::Initialize()
 
 void SysMonitor::Deinit()
 {
+    Logger::LogDebug("SysMonitor deinit");
     _client->Deinit();
     _client.reset();
 }
