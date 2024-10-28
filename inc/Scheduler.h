@@ -7,6 +7,8 @@
 #include <vector>
 #include <atomic>
 
+#include "logger.h"
+
 namespace sys_monitor {
 
 class TaskScheduler {
@@ -33,6 +35,7 @@ public:
     }
 
     void stop() {
+        Logger::LogDebug("Stopping task scheduler");
         running = false;
         for (auto& thread : threads) {
             if (thread.joinable()) {
