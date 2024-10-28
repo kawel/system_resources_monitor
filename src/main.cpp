@@ -8,7 +8,7 @@
 
 #include "logger.h"
 
-const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60);
+const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
 static std::unique_ptr<SysMonitor> g_system_monitor;
 
 static void signalHandler(int signum);
