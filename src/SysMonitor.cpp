@@ -35,6 +35,9 @@ SysMonitor::SysMonitor(const MqttCfg &cfg)
 
 SysMonitor::~SysMonitor()
 {
+    Logger::LogDebug("SysMonitor destructor");
+    Stop();
+    Deinit();
 }
 
 int SysMonitor::Initialize()
@@ -45,9 +48,6 @@ int SysMonitor::Initialize()
         _client->Initialize();
         _client->Subscribe("test/topic");
         _client->Publish("test/topic", "Hello, MQTT!");
-
-        // Keep the main thread alive to allow the network loop to run
-        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
     catch (const std::exception &ex)
     {
@@ -60,6 +60,7 @@ int SysMonitor::Initialize()
 
 void SysMonitor::Deinit()
 {
+    Logger::LogDebug("SysMonitor deinit");
     _client->Deinit();
     _client.reset();
 }

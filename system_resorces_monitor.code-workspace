@@ -81,5 +81,17 @@
 			"ranges": "cpp",
 			"valarray": "cpp"
 		},
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "cmake",
+				"request": "launch",
+				"name": "Debug portfile(s)",
+				"cmakeDebugType": "external",
+				"pipeName": "/tmp/vcpkg_ext_portfile_dbg",
+				"preLaunchTask": "Debug vcpkg commands"
+			}
+		]
 	}
 }

@@ -28,10 +28,5 @@ private:
     std::string _topic;
 
     void scheduleTask(IHwMonitorTask &task, std::chrono::seconds interval);
-
-    std::string makeMqttTopic(const std::string &taskName) const
-    {
-        return _cfg._mqttRootTopic + "/" + taskName;
-    }
 };
 

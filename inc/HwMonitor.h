@@ -185,7 +185,7 @@ public:
     LoadAvg& getLoadAvg() { return _loadAvg; }
     VersionInfo& getVersionInfo() { return _versionInfo; }
     MemInfo& getMemInfo() { return _memInfo; }
-    std::vector<std::shared_ptr<IHwMonitorTask>> getIpLinkStatistics() { return _ipLinkStatistics; }
+    std::vector<std::shared_ptr<IHwMonitorTask>> getIpLinkStatistics() const { return _ipLinkStatistics; }
 protected:
     std::vector<std::string> listNetworkInterfaces();
 };
