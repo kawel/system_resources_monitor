@@ -1,14 +1,14 @@
 /**
-* @file: IMqttClient.h
-* @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
-* @brief: Configuration for Mqtt client
-* -----
-* Copyright 2024 - KElectronics
-* -----
-* HISTORY:
-* Date      	By	Comments
-* ----------	---	---------------------------------------------------------
-*/
+ * @file: IMqttClient.h
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * @brief: Configuration for Mqtt client
+ * -----
+ * Copyright 2024 - KElectronics
+ * -----
+ * HISTORY:
+ * Date      	By	Comments
+ * ----------	---	---------------------------------------------------------
+ */
 
 #pragma once
 
@@ -16,26 +16,48 @@
 #include <MqttMsg.h>
 #include <functional>
 
-struct MqttCfg
+class MqttCfg
 {
+private:
+    std::string _mqttRootTopic;
+
+public:
     std::string _clientName;
     std::string _host;
     uint16_t _port;
     uint8_t _keepAlive;
     std::string _username;
     std::string _password;
-    std::string _mqttRootTopic;
+
+    void setRootTopic(const std::string &rootTopic)
+    {
+        _mqttRootTopic = rootTopic;
+        if (_mqttRootTopic.back() != '/')
+        {
+            _mqttRootTopic += '/';
+        }
+    }
 
     MqttCfg() = default;
-    MqttCfg(const std::string &clientName, const std::string &host, const uint16_t &port, const uint8_t &keepAlive, const std::string &username = "", const std::string &password = "", const std::string &mqttRootTopic = "")
-        : _clientName(clientName),
-          _host(host),
-          _port(port),
-          _keepAlive(keepAlive),
-          _username(username),
-          _password(password),
-          _mqttRootTopic(mqttRootTopic) {
-          };
+    MqttCfg(const std::string &clientName, const std::string &host,
+            const uint16_t &port, const uint8_t &keepAlive,
+            const std::string &username = "", const std::string &password = "",
+            const std::string &mqttRootTopic = "") : _mqttRootTopic(mqttRootTopic),
+                                                     _clientName(clientName),
+                                                     _host(host),
+                                                     _port(port),
+                                                     _keepAlive(keepAlive),
+                                                     _username(username),
+                                                     _password(password)
+    {
+        // check if root topic ends with '/' and add it if not
+        setRootTopic(_mqttRootTopic);
+    };
+
+    std::string getRootTopic() const
+    {
+        return _mqttRootTopic;
+    }
 };
 
 class IMqttClient

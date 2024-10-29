@@ -1,3 +1,16 @@
+/**
+ * @file: SysMonitor.h
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * @brief: System monitor - main class
+ * -----
+ * Copyright 2024 - KElectronics
+ * -----
+ * HISTORY:
+ * Date      	By	Comments
+ * ----------	---	---------------------------------------------------------
+ */
+
+#pragma once
 
 #include <vector>
 #include <string>
@@ -7,7 +20,6 @@
 #include "HwMonitor.h"
 #include "Scheduler.h"
 #include "IHwMonitor.h"
-
 
 class SysMonitor
 {
@@ -19,7 +31,7 @@ public:
     void Deinit();
     void Start() { _taskScheduler.start(); }
     void Stop() { _taskScheduler.stop(); }
-    
+
 private:
     MqttCfg _cfg;
     sys_monitor::TaskScheduler _taskScheduler;

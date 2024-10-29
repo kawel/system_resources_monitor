@@ -19,7 +19,7 @@ SysMonitor::SysMonitor(const MqttCfg &cfg)
       _taskScheduler{},
       _hwMonitor{},
       _client{nullptr},
-      _topic{"sys_mon/data/"}
+      _topic{cfg.getRootTopic()}
 {
     // Schedule tasks using the template function
     scheduleTask(_hwMonitor.getUpTimeInfo(), std::chrono::seconds(1));

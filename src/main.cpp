@@ -6,9 +6,12 @@
 #include <execinfo.h> // For backtrace
 
 #include "SysMonitor.h"
+#include "GetOptions.h"
 #include "logger.h"
 
-const MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
+#define VERSION "0.0.1"
+
+static MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
 static std::unique_ptr<SysMonitor> g_system_monitor;
 
 static void signalHandler(int signum);
@@ -16,7 +19,18 @@ static void signalHandler(int signum);
 int main(int argc, char *argv[])
 {
     Logger::Initialize(LOG_DEBUG, g_cfg._clientName.c_str());
-    Logger::LogNotice("System monitor is starting...");
+    Logger::LogNotice("System monitor version: ", VERSION);
+
+    switch (getOptions(g_cfg, argc, argv))
+    {
+    case 0:
+        break;
+    case 1:
+        return 0;
+    default:
+        Logger::LogError("Failed to get options");
+        return -1;
+    }
 
     // Register signal handler
     std::signal(SIGINT, signalHandler);

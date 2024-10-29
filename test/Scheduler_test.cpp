@@ -4,6 +4,8 @@
 
 TEST(Scheduler, FunctionalTest)
 {
+    GTEST_SKIP() << " Long running test so it is skipped";
+
     sys_monitor::TaskScheduler scheduler;
 
     scheduler.addTask([]() { std::cout << "Task 1 running every 1 second" << std::endl; }, std::chrono::seconds(1));

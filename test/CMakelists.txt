@@ -11,9 +11,11 @@ set(TEST_SOURCES
     HwMonitor_test.cpp
     Scheduler_test.cpp
     SysMonitor_test.cpp
+    GetOptions_test.cpp
     )
 
 set(SOURCES
+    ../src/GetOptions.cpp
     ../src/HwMonitor.cpp
     ../src/logger.cpp  # Include the logger source file
     )
