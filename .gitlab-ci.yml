@@ -1,0 +1,41 @@
+stages:
+  - build
+  - test
+
+variables:
+  # Define any necessary environment variables
+  CMAKE_BUILD_TYPE: "Release"
+  BUILD_DIR: "build"
+
+before_script:
+  # Install dependencies
+  - apt-get update -qq
+  - apt-get install -y cmake g++ libgtest-dev
+
+  # Install Google Test
+  - cd /usr/src/gtest
+  - cmake .
+  - make
+  - cp *.a /usr/lib
+
+  # Create build directory
+  - mkdir -p $BUILD_DIR
+  - cd $BUILD_DIR
+
+build:
+  stage: build
+  script:
+    - cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
+    - cmake --build .
+
+test:
+  stage: test
+  script:
+    - cd $BUILD_DIR
+    - ./runTests
+  artifacts:
+    when: always
+    paths:
+      - $BUILD_DIR
+    reports:
+      junit: $BUILD_DIR/test-results.xml
