@@ -55,7 +55,7 @@ private:
     {
         if (result == 0)
         {
-            Logger::LogWarning("...broker disconnected");
+            Logger::LogNotice("...broker disconnected");
             static_cast<MqttClient *>(obj)->_connected = false;
         }
         else

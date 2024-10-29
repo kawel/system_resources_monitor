@@ -37,7 +37,7 @@ int getOptions(MqttCfg &mqtt_cfg, int argc, char *argv[])
             mqtt_cfg_tmp._password = optarg;
             break;
         case 'r':
-            mqtt_cfg_tmp._mqttRootTopic = optarg;
+            mqtt_cfg_tmp.setRootTopic(optarg);
             break;
         case 'h':
             // fprintf(stdout, "Usage: %s [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n", argv[0]);
