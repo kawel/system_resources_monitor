@@ -81,7 +81,27 @@
 			"ranges": "cpp",
 			"valarray": "cpp"
 		},
-		"c-cpp-flylint.clang.standard": [c++14],
+		"c-cpp-flylint.clang.standard": [
+			"c++14"
+		],
+		"c-cpp-flylint.includePaths": [
+			
+			"inc"
+		],
+		"c-cpp-flylint.debug": true,
+		"c-cpp-flylint.excludeFromWorkspacePaths": [
+			"ext"
+		],
+		"c-cpp-flylint.standard": [
+
+			"c++14",
+		],
+		"c-cpp-flylint.flexelint.enable": false,
+		"c-cpp-flylint.flawfinder.enable": false,
+		"c-cpp-flylint.lizard.enable": false,
+		"c-cpp-flylint.clang.includePaths": [
+
+		],
 	},
 	"launch": {
 		"configurations": [
