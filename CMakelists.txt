@@ -15,3 +15,11 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 # Add subdirectories
 add_subdirectory(src)
 add_subdirectory(test)
+
+# Ensure the destination directory exists
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory /usrdata/bin)")
+
+# Install procedure
+install(TARGETS sys_mon DESTINATION /usrdata/bin/)
+install(FILES ${CMAKE_SOURCE_DIR}/etc/systemd/sys_mon.service DESTINATION /etc/systemd/system)
+

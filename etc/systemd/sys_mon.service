@@ -1,0 +1,15 @@
+[Unit]
+Description=System Monitor Service
+After=mosquitto.service
+Requires=mosquitto.service
+
+[Service]
+ExecStartPre=/bin/sleep 10
+ExecStart=/usrdata/bin/sys_mon -b localhost -p 1883 -r sys/monitor
+Restart=on-failure
+RestartSec=3
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
