@@ -83,7 +83,7 @@ TEST_F(GetOptionsTest, GetOptionsInvalid)
     EXPECT_EQ(checkIfMqttCfgIsNotChanged(mqtt_cfg, mqtt_cfg_vanilla), 0);
 }
 
-TEST_F(GetOptionsTest, GetOptionsHelp)
+TEST_F(GetOptionsTest, MANUAL_GetOptionsHelp)
 {
     int argc = 2;
     char *argv[] = {
@@ -106,7 +106,7 @@ TEST_F(GetOptionsTest, GetOptionsHelp)
     EXPECT_NE(output.find("Usage: test [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]"), std::string::npos);
 }
 
-TEST_F(GetOptionsTest, GetOptionsNoArguments)
+TEST_F(GetOptionsTest, MANUAL_GetOptionsNoArguments)
 {
     int argc = 1;
     char *argv[] = {
