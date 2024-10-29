@@ -15,7 +15,6 @@
 int getOptions(MqttCfg &mqtt_cfg, int argc, char *argv[])
 {
     MqttCfg mqtt_cfg_tmp = mqtt_cfg;
-    int ret_val = 0;
     int opt;
 
     while ((opt = getopt(argc, argv, "b:p:k:u:w:r:h")) != -1)
@@ -41,14 +40,18 @@ int getOptions(MqttCfg &mqtt_cfg, int argc, char *argv[])
             mqtt_cfg_tmp._mqttRootTopic = optarg;
             break;
         case 'h':
+            // fprintf(stdout, "Usage: %s [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n", argv[0]);
+            std::cout << "Usage: " << argv[0] << " [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
+            return 1;
         case '?':
         default:
-            Logger::LogError("Invalid option!");
-            fprintf(stderr, "Usage: %s [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n", argv[0]);
+            // Logger::LogError("Invalid option!");
+            std::cout << "Usage: " << argv[0] << " [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
+            // fprintf(stderr, "Usage: %s [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n", argv[0]);
             return -1;
         }
     }
 
     mqtt_cfg = mqtt_cfg_tmp;
-    return ret_val;
+    return 0;
 }
