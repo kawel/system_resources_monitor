@@ -81,6 +81,7 @@
 			"ranges": "cpp",
 			"valarray": "cpp"
 		},
+		"c-cpp-flylint.clang.standard": [c++14],
 	},
 	"launch": {
 		"configurations": [

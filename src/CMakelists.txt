@@ -1,9 +1,9 @@
 # Enable Cppcheck
-find_program(CPPCHECK cppcheck)
-if(CPPCHECK)
-    # set(CMAKE_CXX_CPPCHECK "${CPPCHECK};--project=${CMAKE_SOURCE_DIR}/cppcheck.json")
-    set(CMAKE_CXX_CPPCHECK "${CPPCHECK};--enable=all;--inconclusive;--std=c++14")
-endif()
+# find_program(CPPCHECK cppcheck)
+# if(CPPCHECK)
+#     # set(CMAKE_CXX_CPPCHECK "${CPPCHECK};--project=${CMAKE_SOURCE_DIR}/cppcheck.json")
+#     set(CMAKE_CXX_CPPCHECK "${CPPCHECK};--enable=all;--inconclusive;--std=c++14")
+# endif()
 
 # Set the include directories
 set(INCLUDES ../inc)

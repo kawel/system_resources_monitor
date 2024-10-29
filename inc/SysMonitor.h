@@ -29,4 +29,3 @@ private:
 
     void scheduleTask(IHwMonitorTask &task, std::chrono::seconds interval);
 };
-
