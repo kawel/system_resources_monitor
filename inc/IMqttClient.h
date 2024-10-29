@@ -13,8 +13,8 @@
 #pragma once
 
 #include <string>
-#include <MqttMsg.h>
 #include <functional>
+#include "MqttMsg.h"
 
 class MqttCfg
 {
