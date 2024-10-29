@@ -10,6 +10,7 @@ set(INCLUDES ../inc)
 
 # Set the source files
 set(SOURCES 
+    GetOptions.cpp
     HwMonitor.cpp
     logger.cpp
     main.cpp
