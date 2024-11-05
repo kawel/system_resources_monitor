@@ -24,12 +24,16 @@ before_script:
 
 build:
   stage: build
+  tags:
+    - my-runner-tag
   script:
     - cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ..
     - cmake --build .
 
 test:
   stage: test
+  tags:
+    - my-runner-tag
   script:
     - cd $BUILD_DIR
     - ./runTests
