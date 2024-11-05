@@ -10,7 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Enable verbose makefile
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-option(UNIT_TESTS "Compile unit tests" OFF)
+# Define an option to include or exclude unit tests
+option(BUILD_UNIT_TESTS "Build unit tests" OFF)
 
 # Set the include directories
 set(INCLUDES inc)
@@ -70,13 +71,13 @@ endif()
 # Print the build type
 message("====================================================")
 message(STATUS "[INFO] Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "[INFO] Compile unit tests: " ${UNIT_TESTS})
+message(STATUS "[INFO] Compile unit tests: " ${BUILD_UNIT_TESTS})
 # Print all used target definitions:
 get_target_property(TARGET_COMPILE_DEFINITIONS ${PROJECT_NAME} COMPILE_DEFINITIONS)
 message(STATUS "[INFO] Target compile definitions: ${TARGET_COMPILE_DEFINITIONS}")
 message("====================================================")
 
-if(UNIT_TESTS MATCHES ON) 
+if(BUILD_UNIT_TESTS MATCHES ON) 
     enable_testing()
 
     # Add subdirectories
