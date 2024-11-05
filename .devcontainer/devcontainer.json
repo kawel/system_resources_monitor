@@ -54,5 +54,5 @@
     "remoteEnv": {
       "SSH_AUTH_SOCK": "/ssh-agent"
     },
-    "postCreateCommand": "postCreateCommands.sh"
+    "postCreateCommand": "ln -sf /ssh-agent /run/ssh-agent.socket && apt-get install sshpass"
   }
