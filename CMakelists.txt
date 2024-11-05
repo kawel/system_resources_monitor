@@ -7,10 +7,10 @@ project(sys_mon)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-enable_testing()
-
 # Enable verbose makefile
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+
+option(UNIT_TESTS "Compile unit tests" OFF)
 
 # Set the include directories
 set(INCLUDES inc)
@@ -70,14 +70,18 @@ endif()
 # Print the build type
 message("====================================================")
 message(STATUS "[INFO] Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "[INFO] Compile unit tests: " ${UNIT_TESTS})
 # Print all used target definitions:
 get_target_property(TARGET_COMPILE_DEFINITIONS ${PROJECT_NAME} COMPILE_DEFINITIONS)
 message(STATUS "[INFO] Target compile definitions: ${TARGET_COMPILE_DEFINITIONS}")
 message("====================================================")
 
-# Add subdirectories
-# add_subdirectory(src)
-add_subdirectory(test)
+if(UNIT_TESTS MATCHES ON) 
+    enable_testing()
+
+    # Add subdirectories
+    add_subdirectory(test)
+endif() 
 
 # Ensure the destination directory exists
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory /usrdata/bin)")
