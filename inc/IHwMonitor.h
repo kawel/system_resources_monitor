@@ -25,9 +25,4 @@ public:
     virtual std::string dumpToJSON() const = 0;
     virtual std::string getTaskName() const = 0;
     virtual ~IHwMonitorTask() = default;
-    std::string run()
-    {
-        update();
-        return dumpToJSON();
-    };
 };
