@@ -54,5 +54,5 @@
     "remoteEnv": {
       "SSH_AUTH_SOCK": "/ssh-agent"
     },
-    "postCreateCommand": "ln -sf /ssh-agent /run/ssh-agent.socket && apt-get install sshpass"
+    "postCreateCommand": "apt install sshpass clang cppcheck gdb pkg-config libmosquitto-dev -y"
   }
