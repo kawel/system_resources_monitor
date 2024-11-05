@@ -72,6 +72,7 @@ endif()
 message("====================================================")
 message(STATUS "[INFO] Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "[INFO] Compile unit tests: " ${BUILD_UNIT_TESTS})
+message(STATUS "[INFO] sourced cc: $ENV{CC}")
 # Print all used target definitions:
 get_target_property(TARGET_COMPILE_DEFINITIONS ${PROJECT_NAME} COMPILE_DEFINITIONS)
 message(STATUS "[INFO] Target compile definitions: ${TARGET_COMPILE_DEFINITIONS}")
