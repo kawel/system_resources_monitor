@@ -4,6 +4,16 @@ Monitor system resources and publish data to MQTT broker.
 
 Version 1.0.0
 
+## Requirements
+
+`git submodule update --init --recursive`
+
+```bash
+sudo apt-get install pkg-config
+# mosquitto
+sudo apt-get install libmosquitto-dev
+```
+
 ## About
 
 This project is a simple system resources monitor that reads the CPU and memory usage and publishes the data to an MQTT broker. The data is published to the selected root topic in JSON format.
