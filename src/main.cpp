@@ -9,7 +9,7 @@
 #include "GetOptions.h"
 #include "logger.h"
 
-#define VERSION "1.1.0"
+#define VERSION "1.1.1"
 
 static MqttCfg g_cfg("sys_mon", "localhost", 1883, 60, "user", "password", "sys_mon/data");
 static std::unique_ptr<SysMonitor> g_system_monitor;

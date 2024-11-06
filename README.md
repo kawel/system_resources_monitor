@@ -59,6 +59,11 @@ This project is a simple system resources monitor that reads the CPU and memory 
 
 ## Release notes
 
+### Version 1.1.1
+
+- fix json key for load average
+- extend output for memory usage
+
 ### Version 1.1.0
 
 - Refactor build system to be used in cross-compilation
