@@ -20,6 +20,17 @@
 #include <vector>
 #include <memory>
 
+namespace
+{
+    const std::string upTimePath = "/proc/uptime";
+    const std::string loadAvgPath = "/proc/loadavg";
+    const std::string versionPath = "/proc/version";
+    const std::string memInfoPath = "/proc/meminfo";
+    const std::string ipLinkPath = "/sys/class/net/";
+    const std::string defaultInterface = "eth0";
+    const std::string ipLinkStatistics = "IpLinkStatistics/";
+}
+
 template <typename T>
 std::string serialize(const T &obj)
 {
@@ -37,7 +48,7 @@ protected:
     std::string _filePath;
 
 public:
-    UpTimeInfo() : _uptime{0.0}, _filePath{"/proc/uptime"} {};
+    UpTimeInfo() : _uptime{0.0}, _filePath{upTimePath} {};
     ~UpTimeInfo() = default;
     std::string getTaskName() const override { return "UpTimeInfo"; }
     std::string dumpToJSON() const override;
@@ -60,7 +71,7 @@ protected:
     std::string _filePath;
 
 public:
-    LoadAvg() : _filePath{"/proc/loadavg"} {};
+    LoadAvg() : _filePath{loadAvgPath} {};
     ~LoadAvg() override = default;
     std::string getTaskName() const override { return "LoadAvg"; }
     std::string dumpToJSON() const override;
@@ -81,7 +92,7 @@ protected:
     std::string _filePath;
 
 public:
-    VersionInfo() : _version(""), _filePath{"/proc/version"} {};
+    VersionInfo() : _version(""), _filePath{versionPath} {};
     ~VersionInfo() override = default;
     std::string getTaskName() const override { return "VersionInfo"; }
     std::string dumpToJSON() const override;
@@ -109,7 +120,7 @@ protected:
     std::string _filePath;
 
 public:
-    MemInfo() : _total{0.0}, _free{0.0}, _available{0.0}, _buffers{0.0}, _cached{0.0}, _swap_total{0.0}, _swap_free{0.0}, _swap_cached{0.0}, _filePath{"/proc/meminfo"} {};
+    MemInfo() : _total{0.0}, _free{0.0}, _available{0.0}, _buffers{0.0}, _cached{0.0}, _swap_total{0.0}, _swap_free{0.0}, _swap_cached{0.0}, _filePath{memInfoPath} {};
     ~MemInfo() override = default;
     std::string getTaskName() const override { return "MemInfo"; }
     std::string dumpToJSON() const override;
@@ -142,9 +153,9 @@ protected:
     std::string _filePath;
 
 public:
-    IpLinkStatistics() : _interfaceName{"eth0"}, _filePath{"/sys/class/net/"} {};
-    IpLinkStatistics(const std::string &interface) : _interfaceName{interface}, _filePath{"/sys/class/net/"} {};
-    std::string getTaskName() const override { return "IpLinkStatistics/" + _interfaceName; }
+    IpLinkStatistics() : _interfaceName{defaultInterface}, _filePath{ipLinkPath} {};
+    IpLinkStatistics(const std::string &interface) : _interfaceName{interface}, _filePath{ipLinkPath} {};
+    std::string getTaskName() const override { return ipLinkStatistics + _interfaceName; }
     std::string dumpToJSON() const override;
 
     int update() override;

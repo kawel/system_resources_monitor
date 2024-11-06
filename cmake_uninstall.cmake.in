@@ -1,0 +1,20 @@
+# Stop the sys_mon service
+message(STATUS "Stopping the sys_mon service...")
+execute_process(COMMAND systemctl stop sys_mon.service)
+
+message(STATUS "Disabling the sys_mon service...")
+execute_process(COMMAND systemctl disable sys_mon.service)
+
+# Remove the sys_mon binary
+message(STATUS "Removing the sys_mon binary from /usrdata/bin...")
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove /usrdata/bin/sys_mon)
+
+# Remove the sys_mon.service file
+message(STATUS "Removing the sys_mon.service file from /etc/systemd/system...")
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove /etc/systemd/system/sys_mon.service)
+
+# Reload systemd to apply changes
+message(STATUS "Reloading systemd daemon to apply changes...")
+execute_process(COMMAND systemctl daemon-reload)
+
+message(STATUS "Uninstall process completed.")
