@@ -1,0 +1,58 @@
+{
+    "name": "SysMon devcontainer",
+    "workspaceFolder": "/home/quectel/project",
+    "image": "ag550_tools:7.1.0", 
+    "customizations": {
+      "vscode": {
+        "settings": {"terminal.integrated.shell.linux": "/bin/bash"},
+        "extensions": [
+          // "alexnesnes.teleplot",
+          "christian-kohler.path-intellisense",
+          // "danielpinto8zz6.c-cpp-project-generator",
+          "davidanson.vscode-markdownlint",
+          "esbenp.prettier-vscode",
+          "franneck94.c-cpp-runner",
+          "github.copilot",
+          "github.copilot-chat",
+          "hbenl.vscode-test-explorer",
+          "jackboosy.vcpkg-cmake-tools",
+          // "jacqueslucke.gcov-viewer",
+          "jbenden.c-cpp-flylint",
+          "matepek.vscode-catch2-test-adapter",
+          "mhutchie.git-graph",
+          "mitaki28.vscode-clang",
+          // "ms-azuretools.vscode-docker",
+          // "ms-ceintl.vscode-language-pack-pl",
+          "ms-vscode.cmake-tools",
+          "ms-vscode.cpptools",
+          "ms-vscode.cpptools-extension-pack",
+          "ms-vscode.cpptools-themes",
+          "ms-vscode.hexeditor",
+        //   "ms-vscode.makefile-tools",
+          "ms-vscode.test-adapter-converter",
+          "ms-vscode.vscode-embedded-tools",
+          "psioniq.psi-header",
+          "streetsidesoftware.code-spell-checker",
+          "sz-p.dependencygraph",
+          "trond-snekvik.gnu-mapfiles",
+          "twxs.cmake",
+          "vadimcn.vscode-lldb",
+          "vector-of-bool.gitflow",
+          "visualstudioexptteam.intellicode-api-usage-examples",
+          "visualstudioexptteam.vscodeintellicode",
+          "webfreak.debug",
+          "xaver.clang-format",
+          "yzhang.markdown-all-in-one"
+        ]
+      }
+    },
+    "forwardPorts": [22],
+    "mounts": [
+      "source=${localWorkspaceFolder},target=/home/quectel/project,type=bind",
+      "source=${env:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
+    ],
+    "remoteEnv": {
+      "SSH_AUTH_SOCK": "/ssh-agent"
+    },
+    "postCreateCommand": "apt install sshpass clang cppcheck gdb pkg-config libmosquitto-dev -y"
+  }
