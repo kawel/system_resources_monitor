@@ -2,8 +2,6 @@
 
 Monitor system resources and publish data to MQTT broker.
 
-Version 1.0.0
-
 ## Requirements
 
 `git submodule update --init --recursive`
@@ -60,6 +58,14 @@ This project is a simple system resources monitor that reads the CPU and memory 
 ```
 
 ## Release notes
+
+### Version 1.1.0
+
+- Refactor build system to be used in cross-compilation
+- Minor code improvements after code review
+- Add uninstall target to Makefile
+- Add scripts easy the build process
+- Add .devcontainer for VSCode
 
 ### Version 1.0.0
 
