@@ -89,9 +89,9 @@ std::string LoadAvg::dumpToJSON() const
 {
     json j;
     j["load"] = {
-        {"1min", _load_1},
-        {"5min", _load_5},
-        {"15min", _load_15},
+        {"avg_1min", _load_1},
+        {"avg_5min", _load_5},
+        {"avg_15min", _load_15},
         {"unit", "%"}
     };
     return j.dump();
@@ -185,7 +185,27 @@ int MemInfo::update()
         else if (key == "MemAvailable:")
         {
             iss >> _available;
-            break;
+            // break;
+        }
+        else if (key == "Buffers:")
+        {
+            iss >> _buffers;
+        }
+        else if (key == "Cached:")
+        {
+            iss >> _cached;
+        }
+        else if (key == "SwapTotal:")
+        {
+            iss >> _swap_total;
+        }
+        else if (key == "SwapFree:")
+        {
+            iss >> _swap_free;
+        }
+        else if (key == "SwapCached:")
+        {
+            iss >> _swap_cached;
         }
     } while (std::getline(memInfoFile, line));
 
