@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.10)
 # Define the project name
 project(sys_mon)
 
+# Set the default build type to Debug if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -27,6 +32,9 @@ set(SOURCES
     src/SysMonitor.cpp
 )
 
+# Define the libraries to link
+set(LIBS nlohmann_json::nlohmann_json mosquitto pthread)
+
 # Add the executable target
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -38,21 +46,34 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/ext/json ${CMAKE_BINARY_DIR}/ext/json)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
 
 # Set compiler flags for Debug and Release builds
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -Wall -fmessage-length=0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -fmessage-length=0")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -Wall -fmessage-length=0 -Wno-psabi")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -fmessage-length=0 -Wno-psabi")
 
-# Find the Mosquitto library
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(MOSQUITTO REQUIRED libmosquitto)
+# Use environment variables for cross-compilation
+if(DEFINED ENV{CC})
+    set(CMAKE_C_COMPILER $ENV{CC})
+endif()
 
-# Include the Mosquitto headers
-include_directories(${MOSQUITTO_INCLUDE_DIRS})
+if(DEFINED ENV{CXX})
+    set(CMAKE_CXX_COMPILER $ENV{CXX})
+endif()
+
+if(DEFINED ENV{QL_SDK_CFLAGS})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} $ENV{QL_SDK_CFLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{QL_SDK_CFLAGS}")
+endif()
+
+if(DEFINED ENV{QL_SDK_LDFLAGS})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} $ENV{QL_SDK_LDFLAGS}")
+endif()
+
+# Add environment-specific libraries if defined
+if(DEFINED ENV{QL_SDK_LIBS})
+    list(APPEND LIBS $ENV{QL_SDK_LIBS})
+endif()
 
 # Link libraries to the executable
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE nlohmann_json::nlohmann_json
-    ${MOSQUITTO_LIBRARIES}
-    )
+target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 # Add compile definitions for Release build
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -68,20 +89,30 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 endif()
 
+# Execute the command and capture the output
+execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpmachine OUTPUT_VARIABLE GCC_MACHINE)
+
+# Strip the trailing newline
+string(STRIP "${GCC_MACHINE}" GCC_MACHINE)
+
 # Print the build type
 message("====================================================")
 message(STATUS "[INFO] Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "[INFO] Compile unit tests: " ${BUILD_UNIT_TESTS})
-message(STATUS "[INFO] sourced cc: $ENV{CC}")
-# Print all used target definitions:
+message(STATUS "[INFO] Compile unit tests: ${BUILD_UNIT_TESTS}")
+message(STATUS "[INFO] sourced cxx: $ENV{CXX}")
+message(STATUS "[INFO] Compiler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "[INFO] Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "[INFO] Compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "[INFO] Compiler machine: ${GCC_MACHINE}")
+# flags
+message(STATUS "[INFO] CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+# Print all used target definitions
 get_target_property(TARGET_COMPILE_DEFINITIONS ${PROJECT_NAME} COMPILE_DEFINITIONS)
 message(STATUS "[INFO] Target compile definitions: ${TARGET_COMPILE_DEFINITIONS}")
 message("====================================================")
 
 if(BUILD_UNIT_TESTS MATCHES ON) 
     enable_testing()
-
-    # Add subdirectories
     add_subdirectory(test)
 endif() 
 

@@ -1,0 +1,113 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make all",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/"
+            },
+            "command": "source",
+            "args": [
+                "make_all.sh"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "make all TESTS",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/"
+            },
+            "command": "source",
+            "args": [
+                "make_all_tests.sh"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "make clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/"
+            },
+            "command": "source",
+            "args": [
+                "make_clean.sh"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "cmake configure",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/"
+            },
+            "command": "source",
+            "args": [
+                "cmake_config.sh"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "cmake configure TESTS",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/"
+            },
+            "command": "source",
+            "args": [
+                "cmake_config_tests.sh"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "update app on target",
+            "type": "shell",
+            // "command": "source",
+            "command": "scripts/update_app_on_target.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

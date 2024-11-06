@@ -54,5 +54,5 @@
     "remoteEnv": {
       "SSH_AUTH_SOCK": "/ssh-agent"
     },
-    "postCreateCommand": "apt install sshpass clang cppcheck gdb pkg-config libmosquitto-dev -y"
+    "postCreateCommand": "apt install pkg-config sshpass clang cppcheck gdb libmosquitto-dev -y"
   }

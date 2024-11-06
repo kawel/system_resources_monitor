@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 {
     Logger::Initialize(LOG_DEBUG, g_cfg._clientName.c_str());
     Logger::LogNotice("System monitor version: ", VERSION);
+    Logger::LogNotice("Build date: ", __DATE__, " ", __TIME__);
 
     switch (getOptions(g_cfg, argc, argv))
     {
