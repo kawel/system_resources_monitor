@@ -5,7 +5,7 @@ Requires=mosquitto.service
 
 [Service]
 ExecStartPre=/bin/sleep 10
-ExecStart=/usrdata/bin/sys_mon -b localhost -p 1883 -r sys/monitor
+ExecStart=/usrdata/bin/sys_mon -c sys_mon_nad -b localhost -p 1883 -r fuba_sa/sys_mon/nad
 Restart=on-failure
 RestartSec=3
 StartLimitIntervalSec=60

@@ -14,15 +14,18 @@
 
 const MqttCfg mqtt_cfg_vanilla("client_name", "host_address", 1111, 22, "user_name", "user_password", "root_topic");
 
-class GetOptionsTest : public ::testing::Test {
+class GetOptionsTest : public ::testing::Test
+{
 protected:
     MqttCfg mqtt_cfg;
 
-    void SetUp() override {
+    void SetUp() override
+    {
         mqtt_cfg = mqtt_cfg_vanilla;
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
         // Clean up resources if needed
     }
 
@@ -44,7 +47,7 @@ protected:
 
 TEST_F(GetOptionsTest, GetOptions)
 {
-    int argc = 7;
+    int argc = 9;
     char *argv[] = {
         (char *)"test",
         (char *)"-b",
@@ -52,12 +55,15 @@ TEST_F(GetOptionsTest, GetOptions)
         (char *)"-p",
         (char *)"1883",
         (char *)"-k",
-        (char *)"60"};
+        (char *)"60",
+        (char *)"-c",
+        (char *)"new_client_name",
+    };
 
     int ret_val = getOptions(mqtt_cfg, argc, argv);
     EXPECT_EQ(ret_val, 0);
 
-    EXPECT_EQ(mqtt_cfg._clientName, "client_name");
+    EXPECT_EQ(mqtt_cfg._clientName, "new_client_name");
     EXPECT_EQ(mqtt_cfg._host, "localhost");
     EXPECT_EQ(mqtt_cfg._port, 1883);
     EXPECT_EQ(mqtt_cfg._keepAlive, 60);
@@ -103,7 +109,7 @@ TEST_F(GetOptionsTest, MANUAL_GetOptionsHelp)
     EXPECT_EQ(checkIfMqttCfgIsNotChanged(mqtt_cfg, mqtt_cfg_vanilla), 0);
 
     // Check if the help message is printed
-    EXPECT_NE(output.find("Usage: test [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]"), std::string::npos);
+    EXPECT_NE(output.find("Usage: test [-c client name] [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]"), std::string::npos);
 }
 
 TEST_F(GetOptionsTest, MANUAL_GetOptionsNoArguments)
@@ -116,12 +122,10 @@ TEST_F(GetOptionsTest, MANUAL_GetOptionsNoArguments)
 
     EXPECT_EQ(checkIfMqttCfgIsNotChanged(mqtt_cfg, mqtt_cfg_vanilla), 0);
 
-
     int argc2 = 0;
     char *argv2[] = {};
 
     EXPECT_EQ(getOptions(mqtt_cfg, argc2, argv2), 0);
 
     EXPECT_EQ(checkIfMqttCfgIsNotChanged(mqtt_cfg, mqtt_cfg_vanilla), 0);
-
 }
