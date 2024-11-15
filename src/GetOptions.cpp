@@ -17,10 +17,13 @@ int getOptions(MqttCfg &mqtt_cfg, int argc, char *argv[])
     MqttCfg mqtt_cfg_tmp = mqtt_cfg;
     int opt;
 
-    while ((opt = getopt(argc, argv, "b:p:k:u:w:r:h")) != -1)
+    while ((opt = getopt(argc, argv, "c:b:p:k:u:w:r:h")) != -1)
     {
         switch (opt)
         {
+        case 'c':
+            mqtt_cfg_tmp._clientName = optarg;
+            break;
         case 'b':
             mqtt_cfg_tmp._host = optarg;
             break;
