@@ -43,11 +43,11 @@ int getOptions(MqttCfg &mqtt_cfg, int argc, char *argv[])
             mqtt_cfg_tmp.setRootTopic(optarg);
             break;
         case 'h':
-            std::cout << "Usage: " << argv[0] << " [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
+            std::cout << "Usage: " << argv[0] << " [-c client name] [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
             return 1;
         case '?':
         default:
-            std::cout << "Usage: " << argv[0] << " [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
+            std::cout << "Usage: " << argv[0] << " [-c client name] [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]\n";
             return -1;
         }
     }

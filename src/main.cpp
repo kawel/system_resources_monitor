@@ -18,7 +18,6 @@ static void signalHandler(int signum);
 
 int main(int argc, char *argv[])
 {
-    Logger::Initialize(LOG_DEBUG, g_cfg._clientName.c_str());
     Logger::LogNotice("System monitor version: ", VERSION);
     Logger::LogNotice("Build date: ", __DATE__, " ", __TIME__);
 
@@ -32,6 +31,8 @@ int main(int argc, char *argv[])
         Logger::LogError("Failed to get options");
         return -1;
     }
+    
+    Logger::Initialize(LOG_DEBUG, g_cfg._clientName.c_str());
 
     // Register signal handler
     std::signal(SIGINT, signalHandler);

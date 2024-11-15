@@ -47,7 +47,7 @@ protected:
 
 TEST_F(GetOptionsTest, GetOptions)
 {
-    int argc = 7;
+    int argc = 9;
     char *argv[] = {
         (char *)"test",
         (char *)"-b",
@@ -109,7 +109,7 @@ TEST_F(GetOptionsTest, MANUAL_GetOptionsHelp)
     EXPECT_EQ(checkIfMqttCfgIsNotChanged(mqtt_cfg, mqtt_cfg_vanilla), 0);
 
     // Check if the help message is printed
-    EXPECT_NE(output.find("Usage: test [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]"), std::string::npos);
+    EXPECT_NE(output.find("Usage: test [-c client name] [-b broker] [-p port] [-k keepAlive] [-u user] [-w password] [-r topicRoot] [-h help]"), std::string::npos);
 }
 
 TEST_F(GetOptionsTest, MANUAL_GetOptionsNoArguments)
