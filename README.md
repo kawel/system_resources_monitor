@@ -76,6 +76,7 @@ rm -rf build
 
 ### Arguments
 
+- `-c` mqtt client name
 - `-b` broker - MQTT broker address
 - `-p` port - MQTT broker port
 - `-k` keepAlive - MQTT keep alive
@@ -86,6 +87,7 @@ rm -rf build
 
 ### Default values
 
+- client_name: `sys_mon`
 - broker: `localhost`
 - port: `1883`
 - keepAlive: `60`
@@ -104,6 +106,10 @@ rm -rf build
 ```
 
 ## Release notes
+
+### Version 1.1.2
+
+- Add client name to command line arguments
 
 ### Version 1.1.1
 
