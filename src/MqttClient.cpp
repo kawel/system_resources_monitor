@@ -61,12 +61,21 @@ void MqttClient::Deinit()
 
 bool MqttClient::connect()
 {
-    int res = mosquitto_connect(_mosq, _host.c_str(), _port, _keepAlive);
-    if (res != MOSQ_ERR_SUCCESS)
-    {
-        Logger::LogError("Failed to connect to broker:", mosquitto_strerror(res));
-        throw std::runtime_error("Failed to connect to broker");
-    }
+   int res{MOSQ_ERR_NO_CONN};
+   while (res != MOSQ_ERR_SUCCESS)
+   {
+      std::size_t count{0};
+      const std::size_t max_attempts = 10;
+
+      res = mosquitto_connect(_mosq, _host.c_str(), _port, _keepAlive);
+      if (res != MOSQ_ERR_SUCCESS)
+      {
+         Logger::LogError("Failed to connect to broker:", mosquitto_strerror(res),"Attempt:", ++count, " Retry after 5 seconds...");
+         if(count == max_attempts) {
+            throw std::runtime_error("Failed to connect to broker");
+         }
+      }
+   }
     Logger::LogInfo("Connecting to broker:", _host, ":", _port);
     return true;
 }
